@@ -9,6 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -17,6 +21,7 @@ import android.view.ViewGroup;
 public class MovieListFragment extends Fragment {
 
     private RecyclerView mMovieListRecyclerView;
+    private MovieAdapter mMovieAdapter;
 
     public MovieListFragment() {
         // Required empty public constructor
@@ -30,34 +35,79 @@ public class MovieListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_movie_list, container, false);
 
         mMovieListRecyclerView = (RecyclerView) view.findViewById(R.id.movie_list_recycler_view);
-        //mMovieListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mMovieListRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        mMovieListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        //mMovieListRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+
+        // hook up the adapter to the RecyclerView
+        if(mMovieAdapter == null) {
+
+            List<Movie> dummyMovieList = new ArrayList<>();
+
+            // create some dummy data
+            for(int i = 0; i < 15; i++) {
+                Movie dummyMovie = new Movie();
+                dummyMovie.setId(i);
+                dummyMovie.setTitle("Title #" + i);
+                dummyMovie.setPosterPath("/xfWac8MTYDxujaxgPVcRD9yZaul.jpg");
+                dummyMovie.setBackdropPath("/tFI8VLMgSTTU38i8TIsklfqS9Nl.jpg");
+                dummyMovieList.add(dummyMovie);
+            }
+
+            mMovieAdapter = new MovieAdapter(dummyMovieList);
+            mMovieListRecyclerView.setAdapter(mMovieAdapter);
+        }
+        else {
+            mMovieAdapter.notifyDataSetChanged();
+        }
+
 
         return view;
     }
 
-    private class MovieListHolder extends RecyclerView.ViewHolder {
+    private class MovieHolder extends RecyclerView.ViewHolder {
 
-        public MovieListHolder(View itemView) {
+        private Movie mMovie;
+
+        private TextView mTitleTextView;
+
+
+        public MovieHolder(View itemView) {
             super(itemView);
+
+            mTitleTextView = (TextView) itemView;
+        }
+
+        public void bindMovie(Movie movie) {
+            mMovie = movie;
+            mTitleTextView.setText(mMovie.getTitle());
         }
     }
 
-    private class MovieListAdapter extends RecyclerView.Adapter<MovieListHolder> {
+    private class MovieAdapter extends RecyclerView.Adapter<MovieHolder> {
 
-        @Override
-        public MovieListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return null;
+        private List<Movie> mMovies;
+
+        public MovieAdapter(List<Movie> movies) {
+            mMovies = movies;
         }
 
         @Override
-        public void onBindViewHolder(MovieListHolder holder, int position) {
+        public MovieHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+            View view = layoutInflater.inflate(android.R.layout.simple_list_item_1, parent, false);
 
+            return new MovieHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(MovieHolder holder, int position) {
+            Movie movie = mMovies.get(position);
+            holder.bindMovie(movie);
         }
 
         @Override
         public int getItemCount() {
-            return 0;
+            return mMovies.size();
         }
     }
 }
