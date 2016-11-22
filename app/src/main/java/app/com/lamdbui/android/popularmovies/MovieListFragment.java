@@ -1,6 +1,8 @@
 package app.com.lamdbui.android.popularmovies;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -35,8 +38,8 @@ public class MovieListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_movie_list, container, false);
 
         mMovieListRecyclerView = (RecyclerView) view.findViewById(R.id.movie_list_recycler_view);
-        mMovieListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        //mMovieListRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        //mMovieListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mMovieListRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
         // hook up the adapter to the RecyclerView
         if(mMovieAdapter == null) {
@@ -68,17 +71,23 @@ public class MovieListFragment extends Fragment {
 
         private Movie mMovie;
 
+        private ImageView mImageView;
         private TextView mTitleTextView;
 
 
         public MovieHolder(View itemView) {
             super(itemView);
 
-            mTitleTextView = (TextView) itemView;
+            mImageView = (ImageView) itemView.findViewById(R.id.list_item_movie_image_view);
+            mTitleTextView = (TextView) itemView.findViewById(R.id.list_item_movie_text_view);
         }
 
         public void bindMovie(Movie movie) {
             mMovie = movie;
+
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+
+            mImageView.setImageBitmap(bitmap);
             mTitleTextView.setText(mMovie.getTitle());
         }
     }
@@ -94,7 +103,7 @@ public class MovieListFragment extends Fragment {
         @Override
         public MovieHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            View view = layoutInflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            View view = layoutInflater.inflate(R.layout.list_item_movie, parent, false);
 
             return new MovieHolder(view);
         }
