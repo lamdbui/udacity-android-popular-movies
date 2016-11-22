@@ -90,20 +90,20 @@ public class MovieListFragment extends Fragment {
         movieDbTask.execute();
     }
 
-    public class FetchMovieDBPopularTask extends AsyncTask<Void, Void, String> {
+    public class FetchMovieDBPopularTask extends AsyncTask<Void, Void, List<Movie>> {
 
         private final String LOG_TAG = FetchMovieDBPopularTask.class.getSimpleName();
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(List<Movie> result) {
             if(result != null) {
-                // Need to parse the JSON here
-
+                mMovieAdapter.setMovies(result);
+                mMovieAdapter.notifyDataSetChanged();
             }
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected List<Movie> doInBackground(Void... params) {
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -169,9 +169,11 @@ public class MovieListFragment extends Fragment {
                 }
             }
 
+            List<Movie> movieList = new ArrayList<>();
+
             // Lets parse the JSON string
             try {
-                List<Movie> movieList = convertMovieDbJsonToMovie(movieDbJsonStr);
+                movieList = convertMovieDbJsonToMovie(movieDbJsonStr);
                 Log.d(LOG_TAG, "MovieList ITEMS: " + movieList.size());
             }
             catch(JSONException e) {
@@ -179,7 +181,7 @@ public class MovieListFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            return null;
+            return movieList;
         }
 
         // This function assumes we have a valid JSON string already
@@ -299,6 +301,10 @@ public class MovieListFragment extends Fragment {
         @Override
         public int getItemCount() {
             return mMovies.size();
+        }
+
+        public void setMovies(List<Movie> movies) {
+            mMovies = movies;
         }
     }
 }
