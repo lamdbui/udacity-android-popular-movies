@@ -22,6 +22,7 @@ public class Movie {
     private String mPosterPath;
     private String mBackdropPath;
     private String mOverview;
+    private boolean mAdult;
 
     public Movie() {
 
@@ -129,5 +130,13 @@ public class Movie {
 
     public void setOverview(String overview) {
         mOverview = overview;
+    }
+
+    public boolean isAdult() {
+        return mAdult;
+    }
+
+    public void setAdult(boolean adult) {
+        mAdult = adult;
     }
 }
