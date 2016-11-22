@@ -3,17 +3,26 @@ package app.com.lamdbui.android.popularmovies;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,8 +72,98 @@ public class MovieListFragment extends Fragment {
             mMovieAdapter.notifyDataSetChanged();
         }
 
+        getMovieDBPopular();
+
 
         return view;
+    }
+
+    private void getMovieDBPopular() {
+        FetchMovieDBPopularTask movieDbTask = new FetchMovieDBPopularTask();
+        movieDbTask.execute();
+    }
+
+    public class FetchMovieDBPopularTask extends AsyncTask<Void, Void, String> {
+
+        private final String LOG_TAG = FetchMovieDBPopularTask.class.getSimpleName();
+
+        @Override
+        protected void onPostExecute(String result) {
+            if(result != null) {
+                // Need to parse the JSON here
+
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            String movieDbJsonStr = null;
+
+            try {
+
+                final String MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie/";
+                final String POPULAR_PARAM = "popular";
+                final String API_KEY_PARAM = "api_key";
+
+                Uri builtUri = Uri.parse(MOVIE_DB_BASE_URL).buildUpon()
+                        .appendPath(POPULAR_PARAM)
+                        .appendQueryParameter(API_KEY_PARAM, BuildConfig.MOVIE_DB_API_KEY)
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+
+                Log.d(LOG_TAG, "MovieDB URL: " + builtUri.toString());
+
+                // create our connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+
+                if(buffer == null) {
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+
+                if(buffer.length() == 0) {
+                    // we had an empty stream, so don't bother parsing
+                    return null;
+                }
+                movieDbJsonStr = buffer.toString();
+
+                Log.d(LOG_TAG, "MovieDB JSON String: " + movieDbJsonStr);
+            }
+            catch(IOException e) {
+                Log.e(LOG_TAG, "Error: ", e);
+            }
+            finally {
+                if(urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if(reader != null) {
+                    try {
+                        reader.close();
+                    }
+                    catch(IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 
     private class MovieHolder extends RecyclerView.ViewHolder {
