@@ -121,7 +121,7 @@ public class MovieListFragment extends Fragment {
             mMovieAdapter.notifyDataSetChanged();
         }
 
-        getMovieDBPopular();
+        getMovieDBList();
 
 
         return view;
@@ -135,10 +135,11 @@ public class MovieListFragment extends Fragment {
 
         if(requestCode == REQUEST_SORT_BY) {
             mSortOption = (SortBy) data.getSerializableExtra(SortByFragment.EXTRA_SORT_BY);
+            getMovieDBList();
         }
     }
 
-    private void getMovieDBPopular() {
+    private void getMovieDBList() {
         FetchMovieDBTask movieDbTask = new FetchMovieDBTask();
         movieDbTask.execute();
     }

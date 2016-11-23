@@ -55,12 +55,25 @@ public class SortByFragment extends AppCompatDialogFragment {
                 .setSingleChoiceItems(R.array.sort_by_options, sortByPosition, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getActivity(), "Selected: " + which, Toast.LENGTH_SHORT);
+                        Toast.makeText(getActivity(), "Selected: " + which, Toast.LENGTH_SHORT).show();
+
+                        switch(which) {
+                            case 0:
+                                mSelectedSortOption = MovieListFragment.SortBy.POPULAR;
+                                break;
+                            case 1:
+                                mSelectedSortOption = MovieListFragment.SortBy.TOP_RATED;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 })
-                .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getActivity(), "Clicked OKAY!", Toast.LENGTH_SHORT).show();
+
                         // send our result back to our Target Fragment
                         sendResult(Activity.RESULT_OK, mSelectedSortOption);
                     }
