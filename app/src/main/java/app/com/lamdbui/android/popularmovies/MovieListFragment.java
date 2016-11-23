@@ -6,13 +6,18 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -47,6 +52,31 @@ public class MovieListFragment extends Fragment {
 
     public MovieListFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_sort, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //return super.onOptionsItemSelected(item);
+        int id = item.getItemId();
+
+        if(id == R.id.menu_item_sort_by) {
+            FragmentManager manager = getFragmentManager();
+            SortByFragment dialog = new SortByFragment();
+            dialog.show(manager, "SortByDialog");
+        }
+        return true;
     }
 
     @Override
@@ -116,10 +146,12 @@ public class MovieListFragment extends Fragment {
 
                 final String MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie/";
                 final String POPULAR_PARAM = "popular";
+                final String TOP_RATED_PARAM = "top_rated";
                 final String API_KEY_PARAM = "api_key";
 
                 Uri builtUri = Uri.parse(MOVIE_DB_BASE_URL).buildUpon()
-                        .appendPath(POPULAR_PARAM)
+                        //.appendPath(POPULAR_PARAM)
+                        .appendPath(TOP_RATED_PARAM)
                         .appendQueryParameter(API_KEY_PARAM, BuildConfig.MOVIE_DB_API_KEY)
                         .build();
 
@@ -258,14 +290,12 @@ public class MovieListFragment extends Fragment {
         private Movie mMovie;
 
         private ImageView mImageView;
-        //private TextView mTitleTextView;
 
 
         public MovieHolder(View itemView) {
             super(itemView);
 
             mImageView = (ImageView) itemView.findViewById(R.id.list_item_movie_image_view);
-            //mTitleTextView = (TextView) itemView.findViewById(R.id.list_item_movie_text_view);
         }
 
         public void bindMovie(Movie movie) {
