@@ -1,6 +1,8 @@
 package app.com.lamdbui.android.popularmovies;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -10,9 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -47,8 +46,15 @@ import java.util.List;
  */
 public class MovieListFragment extends Fragment {
 
+    public enum SortBy { POPULAR, TOP_RATED };
+
+    private static final int REQUEST_SORT_BY = 0;
+    private static final String DIALOG_SORT_BY = "DialogSortBy";
+
     private RecyclerView mMovieListRecyclerView;
     private MovieAdapter mMovieAdapter;
+
+    private SortBy mSortOption;
 
     public MovieListFragment() {
         // Required empty public constructor
@@ -58,6 +64,9 @@ public class MovieListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        // default setting
+        mSortOption = SortBy.POPULAR;
     }
 
     @Override
@@ -73,8 +82,10 @@ public class MovieListFragment extends Fragment {
 
         if(id == R.id.menu_item_sort_by) {
             FragmentManager manager = getFragmentManager();
-            SortByFragment dialog = new SortByFragment();
-            dialog.show(manager, "SortByDialog");
+            //SortByFragment dialog = new SortByFragment();
+            SortByFragment dialog = SortByFragment.newInstance(mSortOption);
+            dialog.setTargetFragment(MovieListFragment.this, REQUEST_SORT_BY);
+            dialog.show(manager, DIALOG_SORT_BY);
         }
         return true;
     }
@@ -86,7 +97,6 @@ public class MovieListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_movie_list, container, false);
 
         mMovieListRecyclerView = (RecyclerView) view.findViewById(R.id.movie_list_recycler_view);
-        //mMovieListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mMovieListRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
         // hook up the adapter to the RecyclerView
@@ -117,14 +127,25 @@ public class MovieListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        if(requestCode == REQUEST_SORT_BY) {
+            mSortOption = (SortBy) data.getSerializableExtra(SortByFragment.EXTRA_SORT_BY);
+        }
+    }
+
     private void getMovieDBPopular() {
-        FetchMovieDBPopularTask movieDbTask = new FetchMovieDBPopularTask();
+        FetchMovieDBTask movieDbTask = new FetchMovieDBTask();
         movieDbTask.execute();
     }
 
-    public class FetchMovieDBPopularTask extends AsyncTask<Void, Void, List<Movie>> {
+    public class FetchMovieDBTask extends AsyncTask<Void, Void, List<Movie>> {
 
-        private final String LOG_TAG = FetchMovieDBPopularTask.class.getSimpleName();
+        private final String LOG_TAG = FetchMovieDBTask.class.getSimpleName();
 
         @Override
         protected void onPostExecute(List<Movie> result) {
@@ -151,7 +172,7 @@ public class MovieListFragment extends Fragment {
 
                 Uri builtUri = Uri.parse(MOVIE_DB_BASE_URL).buildUpon()
                         //.appendPath(POPULAR_PARAM)
-                        .appendPath(TOP_RATED_PARAM)
+                        .appendPath((mSortOption == SortBy.POPULAR) ? POPULAR_PARAM : TOP_RATED_PARAM)
                         .appendQueryParameter(API_KEY_PARAM, BuildConfig.MOVIE_DB_API_KEY)
                         .build();
 
