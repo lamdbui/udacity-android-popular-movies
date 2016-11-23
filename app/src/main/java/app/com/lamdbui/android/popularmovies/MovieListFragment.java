@@ -10,12 +10,15 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +48,6 @@ public class MovieListFragment extends Fragment {
     public MovieListFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -256,14 +258,14 @@ public class MovieListFragment extends Fragment {
         private Movie mMovie;
 
         private ImageView mImageView;
-        private TextView mTitleTextView;
+        //private TextView mTitleTextView;
 
 
         public MovieHolder(View itemView) {
             super(itemView);
 
             mImageView = (ImageView) itemView.findViewById(R.id.list_item_movie_image_view);
-            mTitleTextView = (TextView) itemView.findViewById(R.id.list_item_movie_text_view);
+            //mTitleTextView = (TextView) itemView.findViewById(R.id.list_item_movie_text_view);
         }
 
         public void bindMovie(Movie movie) {
@@ -271,8 +273,15 @@ public class MovieListFragment extends Fragment {
 
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
 
-            mImageView.setImageBitmap(bitmap);
-            mTitleTextView.setText(mMovie.getTitle());
+            final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/w185/";
+
+            Uri imageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
+                    .appendEncodedPath(mMovie.getPosterPath())
+                    .build();
+
+            mImageView.setAdjustViewBounds(true);
+
+            Picasso.with(getActivity()).load(imageLocation.toString()).into(mImageView);
         }
     }
 
