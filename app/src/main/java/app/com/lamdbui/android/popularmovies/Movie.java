@@ -1,5 +1,9 @@
 package app.com.lamdbui.android.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -7,7 +11,7 @@ import java.util.List;
  * Created by lamdbui on 11/21/16.
  */
 
-public class Movie {
+public class Movie implements Parcelable {
 
     private int mId;
     private Date mReleaseDate;
@@ -24,9 +28,65 @@ public class Movie {
     private String mOverview;
     private boolean mAdult;
 
+    private Movie(Parcel in) {
+        mId = in.readInt();
+        mReleaseDate = (Date) in.readSerializable();
+        List<Integer> newGenreIds = new ArrayList<>();
+        in.readList(newGenreIds, Integer.class.getClassLoader());
+        mGenreIds = newGenreIds;
+        mTitle = in.readString();
+        mOriginalTitle = in.readString();
+        mOriginalLanguage = in.readString();
+        mPopularity = in.readDouble();
+        mVoteCount = in.readInt();
+        mVideo = (in.readInt() == 1) ? true : false;
+        mVoteAverage = in.readDouble();
+        mPosterPath = in.readString();
+        mBackdropPath = in.readString();
+        mOverview = in.readString();
+        mAdult = (in.readInt() == 1) ? true : false;
+    }
+
     public Movie() {
 
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mId);
+        dest.writeSerializable(mReleaseDate);
+        dest.writeList(mGenreIds);
+        dest.writeString(mTitle);
+        dest.writeString(mOriginalTitle);
+        dest.writeString(mOriginalLanguage);
+        dest.writeDouble(mPopularity);
+        dest.writeInt(mVoteCount);
+        dest.writeInt(mVideo ? 1 : 0);
+        dest.writeDouble(mVoteAverage);
+        dest.writeString(mPosterPath);
+        dest.writeString(mBackdropPath);
+        dest.writeString(mOverview);
+        dest.writeInt(mAdult ? 1 : 0);
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR
+            = new Parcelable.Creator<Movie>() {
+
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 
     public int getId() {
         return mId;

@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -307,7 +308,7 @@ public class MovieListFragment extends Fragment {
         }
     }
 
-    private class MovieHolder extends RecyclerView.ViewHolder {
+    private class MovieHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private Movie mMovie;
 
@@ -318,6 +319,15 @@ public class MovieListFragment extends Fragment {
             super(itemView);
 
             mImageView = (ImageView) itemView.findViewById(R.id.list_item_movie_image_view);
+            mImageView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(getActivity(), "Clicked " + mMovie.getTitle(), Toast.LENGTH_SHORT).show();
+
+            Intent movieIntent = MovieDetailActivity.newIntent(getActivity(), mMovie);
+            startActivity(movieIntent);
         }
 
         public void bindMovie(Movie movie) {
@@ -331,6 +341,7 @@ public class MovieListFragment extends Fragment {
                     .appendEncodedPath(mMovie.getPosterPath())
                     .build();
 
+            // so that the image fills the entire space
             mImageView.setAdjustViewBounds(true);
 
             Picasso.with(getActivity()).load(imageLocation.toString()).into(mImageView);
