@@ -2,15 +2,19 @@ package app.com.lamdbui.android.popularmovies;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.net.ConnectivityManagerCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -124,7 +128,6 @@ public class MovieListFragment extends Fragment {
 
         getMovieDBList();
 
-
         return view;
     }
 
@@ -140,9 +143,21 @@ public class MovieListFragment extends Fragment {
         }
     }
 
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
     private void getMovieDBList() {
-        FetchMovieDBTask movieDbTask = new FetchMovieDBTask();
-        movieDbTask.execute();
+        if(isOnline()) {
+            FetchMovieDBTask movieDbTask = new FetchMovieDBTask();
+            movieDbTask.execute();
+        }
+        else {
+            Toast.makeText(getActivity(), R.string.error_no_connection, Toast.LENGTH_LONG).show();
+        }
     }
 
     public class FetchMovieDBTask extends AsyncTask<Void, Void, List<Movie>> {
