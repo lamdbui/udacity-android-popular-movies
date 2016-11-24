@@ -12,18 +12,23 @@
         <TextView
             android:id="@+id/movie_detail_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
+            android:textSize="34sp"
+            android:background="@android:color/holo_blue_light"
+            android:gravity="center"
             tools:text="Title"/>
 
         <ImageView
             android:id="@+id/movie_detail_poster"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"/>
 
         <TextView
             android:id="@+id/movie_detail_overview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"/>
     </LinearLayout>
 
 </FrameLayout>

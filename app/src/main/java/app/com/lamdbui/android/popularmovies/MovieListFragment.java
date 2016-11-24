@@ -143,6 +143,7 @@ public class MovieListFragment extends Fragment {
         }
     }
 
+    // helper function to verify that we have a working and valid network connection
     private boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
