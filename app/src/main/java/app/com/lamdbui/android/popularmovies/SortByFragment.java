@@ -40,6 +40,8 @@ public class SortByFragment extends AppCompatDialogFragment {
         outState.putSerializable(SAVED_SORT_BY, mSelectedSortOption);
     }
 
+
+/*
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,13 +49,20 @@ public class SortByFragment extends AppCompatDialogFragment {
         if(savedInstanceState != null) {
             mSelectedSortOption = (MovieListFragment.SortBy) savedInstanceState.getSerializable(SAVED_SORT_BY);
         }
-    }
+    }*/
+
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        mSelectedSortOption = (MovieListFragment.SortBy)
-                getArguments().getSerializable(ARG_SORT_BY);
+        if(savedInstanceState != null) {
+            mSelectedSortOption =(MovieListFragment.SortBy) savedInstanceState.getSerializable(SAVED_SORT_BY);
+        }
+        else {
+            mSelectedSortOption = (MovieListFragment.SortBy)
+                    getArguments().getSerializable(ARG_SORT_BY);
+        }
 
         int sortByPosition = 0;
 

@@ -57,6 +57,7 @@ public class MovieListFragment extends Fragment {
 
     private static final int REQUEST_SORT_BY = 0;
     private static final String DIALOG_SORT_BY = "DialogSortBy";
+    private static final String ARG_SORT_BY = "sort_by";
 
     private RecyclerView mMovieListRecyclerView;
     private MovieAdapter mMovieAdapter;
@@ -68,12 +69,23 @@ public class MovieListFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(ARG_SORT_BY, mSortOption);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        // default setting
-        mSortOption = SortBy.POPULAR;
+        if(savedInstanceState != null) {
+            mSortOption = (SortBy) savedInstanceState.getSerializable(ARG_SORT_BY);
+        }
+        else {
+            // default setting
+            mSortOption = SortBy.POPULAR;
+        }
     }
 
     @Override
