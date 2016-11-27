@@ -2,6 +2,7 @@ package app.com.lamdbui.android.popularmovies;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -82,12 +84,10 @@ public class MovieListFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //return super.onOptionsItemSelected(item);
         int id = item.getItemId();
 
         if(id == R.id.menu_item_sort_by) {
             FragmentManager manager = getFragmentManager();
-            //SortByFragment dialog = new SortByFragment();
             SortByFragment dialog = SortByFragment.newInstance(mSortOption);
             dialog.setTargetFragment(MovieListFragment.this, REQUEST_SORT_BY);
             dialog.show(manager, DIALOG_SORT_BY);
@@ -104,29 +104,7 @@ public class MovieListFragment extends Fragment {
         mMovieListRecyclerView = (RecyclerView) view.findViewById(R.id.movie_list_recycler_view);
         mMovieListRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
-        // hook up the adapter to the RecyclerView
-        if(mMovieAdapter == null) {
-
-            List<Movie> dummyMovieList = new ArrayList<>();
-
-            // create some dummy data
-            for(int i = 0; i < 15; i++) {
-                Movie dummyMovie = new Movie();
-                dummyMovie.setId(i);
-                dummyMovie.setTitle("Title #" + i);
-                dummyMovie.setPosterPath("/xfWac8MTYDxujaxgPVcRD9yZaul.jpg");
-                dummyMovie.setBackdropPath("/tFI8VLMgSTTU38i8TIsklfqS9Nl.jpg");
-                dummyMovieList.add(dummyMovie);
-            }
-
-            mMovieAdapter = new MovieAdapter(dummyMovieList);
-            mMovieListRecyclerView.setAdapter(mMovieAdapter);
-        }
-        else {
-            mMovieAdapter.notifyDataSetChanged();
-        }
-
-        getMovieDBList();
+        updateUI();
 
         return view;
     }
@@ -139,7 +117,25 @@ public class MovieListFragment extends Fragment {
 
         if(requestCode == REQUEST_SORT_BY) {
             mSortOption = (SortBy) data.getSerializableExtra(SortByFragment.EXTRA_SORT_BY);
-            getMovieDBList();
+            updateUI();
+        }
+    }
+
+    // helper function to automatically update the UI
+    private void updateUI() {
+
+        getMovieDBList();
+
+        // hook up the adapter to the RecyclerView
+        if(mMovieAdapter == null) {
+
+            List<Movie> movieList = new ArrayList<>();
+
+            mMovieAdapter = new MovieAdapter(movieList);
+            mMovieListRecyclerView.setAdapter(mMovieAdapter);
+        }
+        else {
+            mMovieAdapter.notifyDataSetChanged();
         }
     }
 
@@ -165,8 +161,21 @@ public class MovieListFragment extends Fragment {
 
         private final String LOG_TAG = FetchMovieDBTask.class.getSimpleName();
 
+        private ProgressDialog mProgressDialog = new ProgressDialog(getActivity());
+
+        @Override
+        protected void onPreExecute() {
+            // show a nice dialog to the user indicating that something is happening
+            mProgressDialog.setMessage(getString(R.string.fetch_movie_list_message));
+            mProgressDialog.show();
+        }
+
         @Override
         protected void onPostExecute(List<Movie> result) {
+
+            if(mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
             if(result != null) {
                 mMovieAdapter.setMovies(result);
                 mMovieAdapter.notifyDataSetChanged();
@@ -189,7 +198,6 @@ public class MovieListFragment extends Fragment {
                 final String API_KEY_PARAM = "api_key";
 
                 Uri builtUri = Uri.parse(MOVIE_DB_BASE_URL).buildUpon()
-                        //.appendPath(POPULAR_PARAM)
                         .appendPath((mSortOption == SortBy.POPULAR) ? POPULAR_PARAM : TOP_RATED_PARAM)
                         .appendQueryParameter(API_KEY_PARAM, BuildConfig.MOVIE_DB_API_KEY)
                         .build();
@@ -340,8 +348,6 @@ public class MovieListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(getActivity(), "Clicked " + mMovie.getTitle(), Toast.LENGTH_SHORT).show();
-
             Intent movieIntent = MovieDetailActivity.newIntent(getActivity(), mMovie);
             startActivity(movieIntent);
         }

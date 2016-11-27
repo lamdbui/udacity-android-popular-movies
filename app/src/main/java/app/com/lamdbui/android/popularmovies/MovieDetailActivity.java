@@ -20,7 +20,6 @@ public class MovieDetailActivity extends SingleFragmentActivity {
     @Override
     protected Fragment createFragment() {
         Movie movie = (Movie) getIntent().getParcelableExtra(EXTRA_MOVIE_PARCEL);
-        //return new MovieDetailFragment();
         return MovieDetailFragment.newInstance(movie);
     }
 }

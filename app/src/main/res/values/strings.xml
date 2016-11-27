@@ -6,4 +6,6 @@
     <string name="okay">Okay</string>
     <string name="error_no_connection">Network connection error! Please
         ensure network is available and functional.</string>
+    <string name="movie_user_rating">User Rating</string>
+    <string name="fetch_movie_list_message">Fetching movie list. Please wait...</string>
 </resources>

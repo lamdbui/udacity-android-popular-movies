@@ -9,12 +9,11 @@
     <TextView
         android:id="@+id/movie_detail_title"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:textSize="34sp"
+        android:layout_height="@dimen/movie_detail_heading_layout_height"
+        android:textSize="@dimen/font_size_large"
         android:background="@android:color/holo_blue_light"
         android:gravity="center"
-        tools:text="Title"
-        android:shadowDy="4"/>
+        tools:text="Title"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -24,17 +23,17 @@
             android:id="@+id/movie_detail_poster"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="50dp"/>
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/movie_detail_poster_image_margin_right"/>
 
         <TextView
             android:id="@+id/movie_detail_release_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/movie_detail_poster"
-            android:textSize="30sp"
-            android:text="2015-10-23"/>
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:textSize="@dimen/font_size_medium"/>
 
         <TextView
             android:id="@+id/movie_detail_runtime"
@@ -42,8 +41,8 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/movie_detail_poster"
             android:layout_below="@id/movie_detail_release_date"
-            android:textSize="20sp"
-            android:text="XXYY min"/>
+            android:textSize="@dimen/font_size_medium"
+            tools:text="XXYY min"/>
 
         <TextView
             android:id="@+id/movie_detail_vote_average"
@@ -51,8 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/movie_detail_poster"
             android:layout_below="@id/movie_detail_runtime"
-            android:textSize="12sp"
-            android:text="X.Y/10"/>
+            android:textSize="@dimen/font_size_medium"/>
 
     </RelativeLayout>
 
@@ -60,6 +58,7 @@
         android:id="@+id/movie_detail_overview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"/>
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:textSize="@dimen/font_size_small"/>
 
 </LinearLayout>
