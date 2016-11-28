@@ -128,8 +128,13 @@ public class MovieListFragment extends Fragment {
         }
 
         if(requestCode == REQUEST_SORT_BY) {
+            SortBy prevSortOption = mSortOption;
             mSortOption = (SortBy) data.getSerializableExtra(SortByFragment.EXTRA_SORT_BY);
-            updateUI();
+
+            // only run the UI update if the value was actually changed
+            if(prevSortOption != mSortOption) {
+                updateUI();
+            }
         }
     }
 
@@ -164,6 +169,7 @@ public class MovieListFragment extends Fragment {
             FetchMovieDBTask movieDbTask = new FetchMovieDBTask();
             movieDbTask.execute();
         }
+        // show a message if we don't have an active network connection available
         else {
             Toast.makeText(getActivity(), R.string.error_no_connection, Toast.LENGTH_LONG).show();
         }

@@ -2,9 +2,11 @@
 
 This is Stage 1 of Project #1 of the Udacity Android Nanodegree to display a grid of movies and additional details when clicked.
 
+Popular Movies uses The Movie DB(https://www.themoviedb.org/) as a data source.
+
 ## Building
 
 This project requires an API key from: The Movie DB(https://www.themoviedb.org/).
 
 Please get your own API key and create the following entry in your local $HOME/.gradle/gradle.properties file:
-> * MyMovieDbApiKey=YOUR\_OWN\_MOVIEDB\_API\_KEY
+> MyMovieDbApiKey=YOUR\_OWN\_MOVIEDB\_API\_KEY
