@@ -1,64 +1,70 @@
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_width="match_parent"
     tools:context="app.com.lamdbui.android.popularmovies.MovieDetailFragment">
 
-    <TextView
-        android:id="@+id/movie_detail_title"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/movie_detail_heading_layout_height"
-        android:textSize="@dimen/font_size_large"
-        android:background="@android:color/holo_blue_light"
-        android:gravity="center"
-        tools:text="Title"/>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/movie_detail_poster"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/movie_detail_poster_image_margin_right"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/movie_detail_release_date"
+            android:id="@+id/movie_detail_title"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/movie_detail_heading_layout_height"
+            android:textSize="@dimen/font_size_large"
+            android:background="@android:color/holo_blue_light"
+            android:gravity="center"
+            tools:text="Title"/>
+
+
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/movie_detail_poster"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:textSize="@dimen/font_size_medium"/>
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/movie_detail_poster"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/movie_detail_poster_image_margin_right"/>
+
+            <TextView
+                android:id="@+id/movie_detail_release_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/movie_detail_poster"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:textSize="@dimen/font_size_medium"/>
+
+            <TextView
+                android:id="@+id/movie_detail_runtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/movie_detail_poster"
+                android:layout_below="@id/movie_detail_release_date"
+                android:textSize="@dimen/font_size_medium"
+                tools:text="XXYY min"/>
+
+            <TextView
+                android:id="@+id/movie_detail_vote_average"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/movie_detail_poster"
+                android:layout_below="@id/movie_detail_runtime"
+                android:textSize="@dimen/font_size_medium"/>
+
+        </RelativeLayout>
 
         <TextView
-            android:id="@+id/movie_detail_runtime"
-            android:layout_width="wrap_content"
+            android:id="@+id/movie_detail_overview"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/movie_detail_poster"
-            android:layout_below="@id/movie_detail_release_date"
-            android:textSize="@dimen/font_size_medium"
-            tools:text="XXYY min"/>
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:textSize="@dimen/font_size_small"/>
 
-        <TextView
-            android:id="@+id/movie_detail_vote_average"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/movie_detail_poster"
-            android:layout_below="@id/movie_detail_runtime"
-            android:textSize="@dimen/font_size_medium"/>
-
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/movie_detail_overview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_vertical_margin"
-        android:textSize="@dimen/font_size_small"/>
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>
