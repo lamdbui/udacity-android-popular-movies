@@ -191,12 +191,16 @@ public class MovieListFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Movie> result) {
 
-            if(mProgressDialog.isShowing()) {
+            if (mProgressDialog.isShowing()) {
                 mProgressDialog.dismiss();
             }
-            if(result != null) {
+            if (result != null) {
                 mMovieAdapter.setMovies(result);
                 mMovieAdapter.notifyDataSetChanged();
+            }
+            // result == null
+            else {
+                Toast.makeText(getActivity(), R.string.error_general, Toast.LENGTH_SHORT);
             }
         }
 
