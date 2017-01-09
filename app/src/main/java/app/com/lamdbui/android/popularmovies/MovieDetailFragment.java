@@ -70,6 +70,11 @@ public class MovieDetailFragment extends Fragment {
     }
 
     private void updateUI() {
+
+        // Fetch our trailers (and soon reviews)
+        //FetchMovieTrailersTask fetchMovieTrailersTask = new FetchMovieTrailersTask();
+        //fetchMovieTrailersTask.execute();
+
         mTitleTextView.setText(mMovie.getTitle());
 
         final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/w185/";

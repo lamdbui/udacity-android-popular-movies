@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.net.ConnectivityManagerCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -73,16 +74,26 @@ public class MovieListFragment extends Fragment
 
     @Override
     public void completedFetchMovieDBTask(List<Movie> result) {
-        if (mProgressDialog.isShowing()) {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
         if (result != null) {
-            mMovieAdapter.setMovies(result);
-            mMovieAdapter.notifyDataSetChanged();
+            //mMovieAdapter.setMovies(result);
+            //mMovieAdapter.notifyDataSetChanged();
 
             Toast.makeText(getActivity(),
                     "FetchMovieDBTask returned this many: " + result.size(), Toast.LENGTH_SHORT)
                     .show();
+
+            // get our trailers for each Movie as well
+            // doing this really kills performance...let's try to do this on use
+//            for(int i = 0; i < result.size(); i++) {
+//                FetchMovieTrailersTask movieTrailersTask = new FetchMovieTrailersTask();
+//                movieTrailersTask.execute(Integer.toString(result.get(i).getId()));
+//            }
+
+            mMovieAdapter.setMovies(result);
+            mMovieAdapter.notifyDataSetChanged();
         }
         // result == null
         else {
@@ -140,6 +151,9 @@ public class MovieListFragment extends Fragment
 
         mMovieListRecyclerView = (RecyclerView) view.findViewById(R.id.movie_list_recycler_view);
         mMovieListRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        //mMovieListRecyclerView.setHasFixedSize(true);
+        //mMovieListRecyclerView.setItemViewCacheSize(20);
+        //mMovieListRecyclerView.setDrawingCacheEnabled(true);
 
         updateUI();
 
@@ -192,8 +206,10 @@ public class MovieListFragment extends Fragment
     private void getMovieDBList() {
         if(isOnline()) {
             // show a nice dialog to the user indicating that something is happening
-            mProgressDialog.setMessage(getString(R.string.fetch_movie_list_message));
-            mProgressDialog.show();
+            if(mProgressDialog != null) {
+                mProgressDialog.setMessage(getString(R.string.fetch_movie_list_message));
+                mProgressDialog.show();
+            }
 
             FetchMovieDBTask movieDbTask = new FetchMovieDBTask(this);
             movieDbTask.execute(
@@ -241,7 +257,15 @@ public class MovieListFragment extends Fragment
             // so that the image fills the entire space
             mImageView.setAdjustViewBounds(true);
 
-            Picasso.with(getActivity()).load(imageLocation.toString()).into(mImageView);
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+
+            Log.d("DISPLAY_METRICS", "W/H: " + metrics.widthPixels + "/" + metrics.heightPixels);
+
+            Picasso picasso = Picasso.with(getActivity());
+            picasso.setIndicatorsEnabled(true);
+
+            picasso.load(imageLocation.toString())
+                    .into(mImageView);
         }
     }
 

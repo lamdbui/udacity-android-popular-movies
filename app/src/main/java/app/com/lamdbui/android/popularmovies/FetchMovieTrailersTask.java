@@ -21,12 +21,15 @@ import java.util.List;
  * Created by lamdbui on 1/8/17.
  */
 
-public class FetchMovieTrailersTask extends AsyncTask<Void, Void, List<MovieTrailer>> {
+public class FetchMovieTrailersTask extends AsyncTask<String, Void, List<MovieTrailer>> {
 
     private static final String LOG_TAG = FetchMovieTrailersTask.class.getSimpleName();
 
     @Override
-    protected List<MovieTrailer> doInBackground(Void... params) {
+    protected List<MovieTrailer> doInBackground(String... params) {
+
+        // get the movie ID we will be querying
+        String id = params[0];
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -40,6 +43,7 @@ public class FetchMovieTrailersTask extends AsyncTask<Void, Void, List<MovieTrai
             final String VIDEOS_PARAM = "videos";
 
             Uri builtUri = Uri.parse(MOVIE_DB_BASE_URL).buildUpon()
+                    .appendPath(id)
                     .appendPath(VIDEOS_PARAM)
                     .appendQueryParameter(API_KEY_PARAM, BuildConfig.MOVIE_DB_API_KEY)
                     .build();
@@ -65,7 +69,7 @@ public class FetchMovieTrailersTask extends AsyncTask<Void, Void, List<MovieTrai
 
             String line;
             while((line = reader.readLine()) != null) {
-                buffer.append("\n");
+                buffer.append(line + "\n");
             }
 
             if(buffer.length() == 0) {
@@ -133,7 +137,7 @@ public class FetchMovieTrailersTask extends AsyncTask<Void, Void, List<MovieTrai
 //        }
 
         final String MOVIEDB_ID = "id";
-        final String MOVIEDB_RESULT = "result";
+        final String MOVIEDB_RESULTS = "results";
         final String MOVIEDB_RESULT_ID = "id";
         final String MOVIEDB_RESULT_ISO_639_1 = "iso_639_1";
         final String MOVIEDB_RESULT_ISO_3166_1 = "iso_3166_1";
@@ -144,7 +148,7 @@ public class FetchMovieTrailersTask extends AsyncTask<Void, Void, List<MovieTrai
         final String MOVIEDB_RESULT_TYPE = "type";
 
         JSONObject rootObject = new JSONObject(jsonStr);
-        JSONArray resultsArray = rootObject.getJSONArray(MOVIEDB_RESULT);
+        JSONArray resultsArray = rootObject.getJSONArray(MOVIEDB_RESULTS);
 
         for(int i = 0; i < resultsArray.length(); i++) {
             JSONObject resultObject = resultsArray.getJSONObject(i);
