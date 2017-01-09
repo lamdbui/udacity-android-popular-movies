@@ -1,10 +1,8 @@
 package app.com.lamdbui.android.popularmovies;
 
-import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,12 +31,12 @@ public class FetchMovieDBTask extends AsyncTask<String, Void, List<Movie>> {
     public static final String POPULAR_PARAM = "popular";
     public static final String TOP_RATED_PARAM = "top_rated";
 
-    //private ProgressDialog mProgressDialog = new ProgressDialog(getActivity());
     private OnCompletedFetchMovieDBTaskListener mCallback;
 
     public FetchMovieDBTask(OnCompletedFetchMovieDBTaskListener callback) {
         super();
 
+        // attach callback from parent context
         mCallback = callback;
     }
 
@@ -49,27 +47,11 @@ public class FetchMovieDBTask extends AsyncTask<String, Void, List<Movie>> {
 
     @Override
     protected void onPreExecute() {
-        // show a nice dialog to the user indicating that something is happening
-//        mProgressDialog.setMessage(getString(R.string.fetch_movie_list_message));
-//        mProgressDialog.show();
     }
 
     @Override
     protected void onPostExecute(List<Movie> result) {
-
         mCallback.completedFetchMovieDBTask(result);
-
-//        if (mProgressDialog.isShowing()) {
-//            mProgressDialog.dismiss();
-//        }
-//        if (result != null) {
-//            mMovieAdapter.setMovies(result);
-//            mMovieAdapter.notifyDataSetChanged();
-//        }
-//        // result == null
-//        else {
-//            Toast.makeText(getActivity(), R.string.error_general, Toast.LENGTH_SHORT);
-//        }
     }
 
     @Override
