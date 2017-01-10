@@ -13,9 +13,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -144,16 +146,39 @@ public class MovieDetailFragment extends Fragment
 
     private class MovieTrailerHolder extends RecyclerView.ViewHolder {
 
+        private ImageButton mMovieTrailerPlayImageView;
         private TextView mMovieTrailerNameTextView;
+
+        private MovieTrailer mMovieTrailer;
 
         public MovieTrailerHolder(View itemView) {
             super(itemView);
+
+            mMovieTrailerPlayImageView =
+                    (ImageButton) itemView.findViewById(R.id.list_item_movie_trailer_play_icon);
+            mMovieTrailerPlayImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getActivity(),
+                            "Play button pressed! - " + mMovieTrailer.getName(),
+                            Toast.LENGTH_SHORT).show();
+
+                    final String YOUTUBE_BASE_NAME = "https://www.youtube.com/watch?v=";
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(YOUTUBE_BASE_NAME + mMovieTrailer.getKey()));
+                    if(intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                        startActivity(intent);
+                    }
+                }
+            });
 
             mMovieTrailerNameTextView =
                     (TextView) itemView.findViewById(R.id.list_item_movie_trailer_name);
         }
 
         public void bindMovieTrailer(MovieTrailer movieTrailer) {
+            mMovieTrailer = movieTrailer;
+
             mMovieTrailerNameTextView.setText(movieTrailer.getName());
         }
     }
