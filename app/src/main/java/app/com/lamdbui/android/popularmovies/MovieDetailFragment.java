@@ -33,7 +33,8 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class MovieDetailFragment extends Fragment
-    implements FetchMovieTrailersTask.OnCompletedFetchMovieTrailerTaskListener {
+    implements FetchMovieTrailersTask.OnCompletedFetchMovieTrailerTaskListener,
+            FetchMovieReviewsTask.OnCompletedFetchMovieReviewsTaskListener {
 
     private static final String ARG_MOVIE_PARCEL = "movie";
 
@@ -49,6 +50,7 @@ public class MovieDetailFragment extends Fragment
 
     private Movie mMovie;
     private List<MovieTrailer> mMovieTrailers;
+    private List<MovieReview> mMovieReviews;
 
     public static MovieDetailFragment newInstance(Movie movie) {
         Bundle args = new Bundle();
@@ -72,14 +74,27 @@ public class MovieDetailFragment extends Fragment
     }
 
     @Override
+    public void completedFetchMovieReviewsTask(List<MovieReview> result) {
+        if(result != null) {
+            mMovieReviews = result;
+
+            updateUI();
+        }
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMovie = (Movie) getArguments().getParcelable(ARG_MOVIE_PARCEL);
         mMovieTrailers = new ArrayList<>();
 
-        // Fetch our trailers (and soon reviews)
+        // Fetch our trailers
         FetchMovieTrailersTask fetchMovieTrailersTask = new FetchMovieTrailersTask(this);
         fetchMovieTrailersTask.execute(Integer.toString(mMovie.getId()));
+
+        // Fetch out reviews
+        FetchMovieReviewsTask fetchMovieReviewsTask = new FetchMovieReviewsTask(this);
+        fetchMovieReviewsTask.execute(Integer.toString(mMovie.getId()));
     }
 
     @Override
@@ -95,7 +110,10 @@ public class MovieDetailFragment extends Fragment
         mReleaseDateTextView = (TextView) view.findViewById(R.id.movie_detail_release_date);
         mTrailersTextView = (TextView) view.findViewById(R.id.movie_trailer_text);
         mTrailersRecyclerView = (RecyclerView) view.findViewById(R.id.movie_trailer_recyclerview);
-        mTrailersRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager.setAutoMeasureEnabled(true);
+        mTrailersRecyclerView.setLayoutManager(linearLayoutManager);
+        //mTrailersRecyclerView.setHasFixedSize(false);
 
         updateUI();
 

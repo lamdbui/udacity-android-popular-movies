@@ -169,7 +169,7 @@ public class FetchMovieReviewsTask extends AsyncTask<String, Void, List<MovieRev
             JSONObject resultObject = resultsArray.getJSONObject(i);
 
             MovieReview review = new MovieReview();
-            review.setID(resultObject.getInt(MOVIEDB_RESULT_ID));
+            review.setID(resultObject.getString(MOVIEDB_RESULT_ID));
             review.setReviewAuthor(resultObject.getString(MOVIEDB_RESULT_AUTHOR));
             review.setReviewContent(resultObject.getString(MOVIEDB_RESULT_CONTENT));
             review.setReviewUrl(resultObject.getString(MOVIEDB_RESULT_URL));

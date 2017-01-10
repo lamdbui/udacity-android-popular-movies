@@ -21,17 +21,17 @@ public class MovieReview {
 //            "total_results": 1
 //    }
 
-    private int mID;
+    private String mID;
     private String mReviewId;
     private String mReviewAuthor;
     private String mReviewContent;
     private String mReviewUrl;
 
-    public int getID() {
+    public String getID() {
         return mID;
     }
 
-    public void setID(int ID) {
+    public void setID(String ID) {
         mID = ID;
     }
 
