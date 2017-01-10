@@ -72,5 +72,11 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/font_size_medium"/>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/movie_trailer_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </android.support.v7.widget.RecyclerView>
+
     </LinearLayout>
 </ScrollView>

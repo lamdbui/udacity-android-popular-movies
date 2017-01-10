@@ -7,11 +7,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -38,6 +41,9 @@ public class MovieDetailFragment extends Fragment
     private TextView mOverviewTextView;
     private TextView mReleaseDateTextView;
     private TextView mTrailersTextView;
+    private RecyclerView mTrailersRecyclerView;
+
+    private MovieTrailerAdapter mMovieTrailerAdapter;
 
     private Movie mMovie;
     private List<MovieTrailer> mMovieTrailers;
@@ -86,6 +92,8 @@ public class MovieDetailFragment extends Fragment
         mOverviewTextView = (TextView) view.findViewById(R.id.movie_detail_overview);
         mReleaseDateTextView = (TextView) view.findViewById(R.id.movie_detail_release_date);
         mTrailersTextView = (TextView) view.findViewById(R.id.movie_trailer_text);
+        mTrailersRecyclerView = (RecyclerView) view.findViewById(R.id.movie_trailer_recyclerview);
+        mTrailersRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         updateUI();
 
@@ -97,6 +105,19 @@ public class MovieDetailFragment extends Fragment
         // Fetch our trailers (and soon reviews)
         //FetchMovieTrailersTask fetchMovieTrailersTask = new FetchMovieTrailersTask();
         //fetchMovieTrailersTask.execute(Integer.toString(mMovie.getId()));
+
+        // hook up our adapter to the RecyclerView
+        if(mMovieTrailerAdapter == null) {
+
+            List<MovieTrailer> movieTrailerList = new ArrayList<>();
+            mMovieTrailerAdapter = new MovieTrailerAdapter(movieTrailerList);
+
+            mTrailersRecyclerView.setAdapter(mMovieTrailerAdapter);
+        }
+        else {
+            mMovieTrailerAdapter.setMovieTrailers(mMovieTrailers);
+            mMovieTrailerAdapter.notifyDataSetChanged();
+        }
 
         mTitleTextView.setText(mMovie.getTitle());
 
@@ -119,5 +140,54 @@ public class MovieDetailFragment extends Fragment
         mTrailersTextView.setText("Num of Trailers = " + mMovieTrailers.size());
 
         Log.d("MOVIE_DETAIL_FRAGMENT", "LOLWUT");
+    }
+
+    private class MovieTrailerHolder extends RecyclerView.ViewHolder {
+
+        private TextView mMovieTrailerNameTextView;
+
+        public MovieTrailerHolder(View itemView) {
+            super(itemView);
+
+            mMovieTrailerNameTextView =
+                    (TextView) itemView.findViewById(R.id.list_item_movie_trailer_name);
+        }
+
+        public void bindMovieTrailer(MovieTrailer movieTrailer) {
+            mMovieTrailerNameTextView.setText(movieTrailer.getName());
+        }
+    }
+
+    private class MovieTrailerAdapter extends RecyclerView.Adapter<MovieTrailerHolder> {
+
+        private List<MovieTrailer> mMovieTrailers;
+
+        public MovieTrailerAdapter(List<MovieTrailer> movieTrailers) {
+            super();
+            mMovieTrailers = movieTrailers;
+        }
+
+        @Override
+        public MovieTrailerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+            View view = layoutInflater.inflate(R.layout.list_item_movie_trailer, parent, false);
+
+            return new MovieTrailerHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(MovieTrailerHolder holder, int position) {
+            MovieTrailer movieTrailer = mMovieTrailers.get(position);
+            holder.bindMovieTrailer(movieTrailer);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mMovieTrailers.size();
+        }
+
+        public void setMovieTrailers(List<MovieTrailer> movieTrailers) {
+            mMovieTrailers = movieTrailers;
+        }
     }
 }
