@@ -261,8 +261,8 @@ public class MovieDetailFragment extends Fragment
         public MovieReviewHolder(View itemView) {
             super(itemView);
 
-            mTextAuthor = (TextView) itemView.findViewById(android.R.id.text1);
-            mTextContent = (TextView) itemView.findViewById(android.R.id.text2);
+            mTextAuthor = (TextView) itemView.findViewById(R.id.list_item_movie_review_author);
+            mTextContent = (TextView) itemView.findViewById(R.id.list_item_movie_review_content);
         }
 
         public void bindMovieReview(MovieReview movieReview) {
@@ -287,7 +287,7 @@ public class MovieDetailFragment extends Fragment
         public MovieReviewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
             View view = layoutInflater.inflate(
-                    android.R.layout.simple_expandable_list_item_2,
+                    R.layout.list_item_movie_review,
                     parent,
                     false);
 
