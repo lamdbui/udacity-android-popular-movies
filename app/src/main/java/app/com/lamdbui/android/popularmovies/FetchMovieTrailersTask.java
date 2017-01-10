@@ -26,9 +26,23 @@ public class FetchMovieTrailersTask extends AsyncTask<String, Void, List<MovieTr
 
     private static final String LOG_TAG = FetchMovieTrailersTask.class.getSimpleName();
 
+    private OnCompletedFetchMovieTrailerTaskListener mCallback;
+
+    // Calling Activity or Fragment must implement this interface
+    public interface OnCompletedFetchMovieTrailerTaskListener {
+        public void completedFetchMovieTrailerTask(List<MovieTrailer> result);
+    }
+
+    public FetchMovieTrailersTask(OnCompletedFetchMovieTrailerTaskListener callback) {
+        super();
+
+        mCallback = callback;
+    }
+
     @Override
     protected void onPostExecute(List<MovieTrailer> movieTrailers) {
         Log.d(LOG_TAG, "Num of Trailers = " + movieTrailers.size());
+        mCallback.completedFetchMovieTrailerTask(movieTrailers);
     }
 
     @Override
