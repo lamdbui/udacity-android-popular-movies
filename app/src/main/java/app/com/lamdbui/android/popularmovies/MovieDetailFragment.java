@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -44,9 +45,13 @@ public class MovieDetailFragment extends Fragment
     private TextView mOverviewTextView;
     private TextView mReleaseDateTextView;
     private TextView mTrailersTextView;
-    private RecyclerView mTrailersRecyclerView;
+    private TextView mReviewsTextView;
 
+    private RecyclerView mTrailersRecyclerView;
     private MovieTrailerAdapter mMovieTrailerAdapter;
+
+    private RecyclerView mReviewsRecyclerView;
+    private MovieReviewAdapter mMovieReviewAdapter;
 
     private Movie mMovie;
     private List<MovieTrailer> mMovieTrailers;
@@ -87,12 +92,13 @@ public class MovieDetailFragment extends Fragment
         super.onCreate(savedInstanceState);
         mMovie = (Movie) getArguments().getParcelable(ARG_MOVIE_PARCEL);
         mMovieTrailers = new ArrayList<>();
+        mMovieReviews = new ArrayList<>();
 
         // Fetch our trailers
         FetchMovieTrailersTask fetchMovieTrailersTask = new FetchMovieTrailersTask(this);
         fetchMovieTrailersTask.execute(Integer.toString(mMovie.getId()));
 
-        // Fetch out reviews
+        // Fetch our reviews
         FetchMovieReviewsTask fetchMovieReviewsTask = new FetchMovieReviewsTask(this);
         fetchMovieReviewsTask.execute(Integer.toString(mMovie.getId()));
     }
@@ -110,10 +116,22 @@ public class MovieDetailFragment extends Fragment
         mReleaseDateTextView = (TextView) view.findViewById(R.id.movie_detail_release_date);
         mTrailersTextView = (TextView) view.findViewById(R.id.movie_trailer_text);
         mTrailersRecyclerView = (RecyclerView) view.findViewById(R.id.movie_trailer_recyclerview);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        linearLayoutManager.setAutoMeasureEnabled(true);
-        mTrailersRecyclerView.setLayoutManager(linearLayoutManager);
-        //mTrailersRecyclerView.setHasFixedSize(false);
+        LinearLayoutManager layoutManagerTrailers = new LinearLayoutManager(getActivity());
+        mTrailersRecyclerView.setLayoutManager(layoutManagerTrailers);
+
+        DividerItemDecoration dividerTrailers = new DividerItemDecoration(getContext(),
+                layoutManagerTrailers.getOrientation());
+        mTrailersRecyclerView.addItemDecoration(dividerTrailers);
+
+        mReviewsTextView = (TextView) view.findViewById(R.id.movie_review_text);
+
+        mReviewsRecyclerView = (RecyclerView) view.findViewById(R.id.movie_review_recyclerview);
+        LinearLayoutManager layoutManagerReviews = new LinearLayoutManager(getActivity());
+        mReviewsRecyclerView.setLayoutManager(layoutManagerReviews);
+
+        DividerItemDecoration dividerReviews = new DividerItemDecoration(getContext(),
+                layoutManagerReviews.getOrientation());
+        mReviewsRecyclerView.addItemDecoration(dividerReviews);
 
         updateUI();
 
@@ -122,21 +140,24 @@ public class MovieDetailFragment extends Fragment
 
     private void updateUI() {
 
-        // Fetch our trailers (and soon reviews)
-        //FetchMovieTrailersTask fetchMovieTrailersTask = new FetchMovieTrailersTask();
-        //fetchMovieTrailersTask.execute(Integer.toString(mMovie.getId()));
-
         // hook up our adapter to the RecyclerView
         if(mMovieTrailerAdapter == null) {
 
             List<MovieTrailer> movieTrailerList = new ArrayList<>();
             mMovieTrailerAdapter = new MovieTrailerAdapter(movieTrailerList);
-
             mTrailersRecyclerView.setAdapter(mMovieTrailerAdapter);
+
+            List<MovieReview> movieReviewList = new ArrayList<>();
+            mMovieReviewAdapter = new MovieReviewAdapter(movieReviewList);
+            mReviewsRecyclerView.setAdapter(mMovieReviewAdapter);
+
         }
         else {
             mMovieTrailerAdapter.setMovieTrailers(mMovieTrailers);
             mMovieTrailerAdapter.notifyDataSetChanged();
+
+            mMovieReviewAdapter.setMovieReviews(mMovieReviews);
+            mMovieReviewAdapter.notifyDataSetChanged();
         }
 
         mTitleTextView.setText(mMovie.getTitle());
@@ -157,9 +178,9 @@ public class MovieDetailFragment extends Fragment
         Date releaseDate = mMovie.getReleaseDate();
         mReleaseDateTextView.setText(releaseDateFormat.format(releaseDate));
 
-        mTrailersTextView.setText("Num of Trailers = " + mMovieTrailers.size());
+        mTrailersTextView.setText(R.string.trailers);
 
-        Log.d("MOVIE_DETAIL_FRAGMENT", "LOLWUT");
+        mReviewsTextView.setText(R.string.reviews);
     }
 
     private class MovieTrailerHolder extends RecyclerView.ViewHolder {
@@ -227,6 +248,65 @@ public class MovieDetailFragment extends Fragment
 
         public void setMovieTrailers(List<MovieTrailer> movieTrailers) {
             mMovieTrailers = movieTrailers;
+        }
+    }
+
+    private class MovieReviewHolder extends RecyclerView.ViewHolder {
+
+        private TextView mTextAuthor;
+        private TextView mTextContent;
+
+        private MovieReview mReview;
+
+        public MovieReviewHolder(View itemView) {
+            super(itemView);
+
+            mTextAuthor = (TextView) itemView.findViewById(android.R.id.text1);
+            mTextContent = (TextView) itemView.findViewById(android.R.id.text2);
+        }
+
+        public void bindMovieReview(MovieReview movieReview) {
+            mReview = movieReview;
+
+            mTextAuthor.setText(mReview.getReviewAuthor());
+            mTextContent.setText(mReview.getReviewContent());
+        }
+    }
+
+    private class MovieReviewAdapter extends RecyclerView.Adapter<MovieReviewHolder> {
+
+        private List<MovieReview> mReviews;
+
+        public MovieReviewAdapter(List<MovieReview> reviews) {
+            super();
+
+            mReviews = reviews;
+        }
+
+        @Override
+        public MovieReviewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+            View view = layoutInflater.inflate(
+                    android.R.layout.simple_expandable_list_item_2,
+                    parent,
+                    false);
+
+            return new MovieReviewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(MovieReviewHolder holder, int position) {
+            MovieReview review = mReviews.get(position);
+            holder.bindMovieReview(review);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mReviews.size();
+        }
+
+        public void setMovieReviews(List<MovieReview> reviews) {
+            mReviews = reviews;
         }
     }
 }
