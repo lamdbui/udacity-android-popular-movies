@@ -72,8 +72,8 @@ public class MovieDetailFragment extends Fragment {
     private void updateUI() {
 
         // Fetch our trailers (and soon reviews)
-        //FetchMovieTrailersTask fetchMovieTrailersTask = new FetchMovieTrailersTask();
-        //fetchMovieTrailersTask.execute();
+        FetchMovieTrailersTask fetchMovieTrailersTask = new FetchMovieTrailersTask();
+        fetchMovieTrailersTask.execute(Integer.toString(mMovie.getId()));
 
         mTitleTextView.setText(mMovie.getTitle());
 

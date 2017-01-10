@@ -257,9 +257,9 @@ public class MovieListFragment extends Fragment
             // so that the image fills the entire space
             mImageView.setAdjustViewBounds(true);
 
-            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            //DisplayMetrics metrics = getResources().getDisplayMetrics();
 
-            Log.d("DISPLAY_METRICS", "W/H: " + metrics.widthPixels + "/" + metrics.heightPixels);
+            //Log.d("DISPLAY_METRICS", "W/H: " + metrics.widthPixels + "/" + metrics.heightPixels);
 
             Picasso picasso = Picasso.with(getActivity());
             picasso.setIndicatorsEnabled(true);

@@ -3,6 +3,7 @@ package app.com.lamdbui.android.popularmovies;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +25,11 @@ import java.util.List;
 public class FetchMovieTrailersTask extends AsyncTask<String, Void, List<MovieTrailer>> {
 
     private static final String LOG_TAG = FetchMovieTrailersTask.class.getSimpleName();
+
+    @Override
+    protected void onPostExecute(List<MovieTrailer> movieTrailers) {
+        Log.d(LOG_TAG, "Num of Trailers = " + movieTrailers.size());
+    }
 
     @Override
     protected List<MovieTrailer> doInBackground(String... params) {
