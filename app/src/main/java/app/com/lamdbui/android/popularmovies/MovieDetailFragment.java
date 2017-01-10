@@ -159,10 +159,6 @@ public class MovieDetailFragment extends Fragment
             mMovieTrailerPlayImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(),
-                            "Play button pressed! - " + mMovieTrailer.getName(),
-                            Toast.LENGTH_SHORT).show();
-
                     final String YOUTUBE_BASE_NAME = "https://www.youtube.com/watch?v=";
                     Intent intent = new Intent(Intent.ACTION_VIEW,
                             Uri.parse(YOUTUBE_BASE_NAME + mMovieTrailer.getKey()));
