@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,6 +59,9 @@ public class MovieDetailFragment extends Fragment
     private Movie mMovie;
     private List<MovieTrailer> mMovieTrailers;
     private List<MovieReview> mMovieReviews;
+
+    private TextView mEmptyTrailersTextView;
+    private TextView mEmptyReviewsTextView;
 
     public static MovieDetailFragment newInstance(Movie movie) {
         Bundle args = new Bundle();
@@ -133,6 +139,9 @@ public class MovieDetailFragment extends Fragment
                 layoutManagerReviews.getOrientation());
         mReviewsRecyclerView.addItemDecoration(dividerReviews);
 
+        mEmptyTrailersTextView = (TextView) view.findViewById(R.id.empty_movie_trailer_text);
+        mEmptyReviewsTextView = (TextView) view.findViewById(R.id.empty_movie_review_text);
+
         updateUI();
 
         return view;
@@ -158,6 +167,25 @@ public class MovieDetailFragment extends Fragment
 
             mMovieReviewAdapter.setMovieReviews(mMovieReviews);
             mMovieReviewAdapter.notifyDataSetChanged();
+        }
+
+        // add some handling so we can show an empty item when there are no list items
+        if(mMovieTrailers.isEmpty()) {
+            mTrailersRecyclerView.setVisibility(GONE);
+            mEmptyTrailersTextView.setVisibility(VISIBLE);
+        }
+        else {
+            mTrailersRecyclerView.setVisibility(VISIBLE);
+            mEmptyTrailersTextView.setVisibility(GONE);
+        }
+
+        if(mMovieReviews.isEmpty()) {
+            mReviewsRecyclerView.setVisibility(GONE);
+            mEmptyReviewsTextView.setVisibility(VISIBLE);
+        }
+        else {
+            mReviewsRecyclerView.setVisibility(VISIBLE);
+            mEmptyReviewsTextView.setVisibility(GONE);
         }
 
         mTitleTextView.setText(mMovie.getTitle());

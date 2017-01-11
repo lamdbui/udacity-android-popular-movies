@@ -85,6 +85,13 @@
         </RelativeLayout>
 
         <TextView
+            android:id="@+id/empty_movie_trailer_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/none"/>
+
+        <TextView
             android:id="@+id/movie_review_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,6 +108,13 @@
             </android.support.v7.widget.RecyclerView>
 
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/empty_movie_review_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/none"/>
 
     </LinearLayout>
 </ScrollView>
