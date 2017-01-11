@@ -279,7 +279,8 @@ public class MovieDetailFragment extends Fragment
         }
     }
 
-    private class MovieReviewHolder extends RecyclerView.ViewHolder {
+    private class MovieReviewHolder extends RecyclerView.ViewHolder
+        implements View.OnClickListener {
 
         private TextView mTextAuthor;
         private TextView mTextContent;
@@ -289,8 +290,17 @@ public class MovieDetailFragment extends Fragment
         public MovieReviewHolder(View itemView) {
             super(itemView);
 
+            itemView.setOnClickListener(this);
+
             mTextAuthor = (TextView) itemView.findViewById(R.id.list_item_movie_review_author);
             mTextContent = (TextView) itemView.findViewById(R.id.list_item_movie_review_content);
+        }
+
+        @Override
+        public void onClick(View view) {
+            Intent intent = MovieReviewListActivity
+                    .newIntent(getActivity(), (ArrayList) mMovieReviews);
+            startActivity(intent);
         }
 
         public void bindMovieReview(MovieReview movieReview) {

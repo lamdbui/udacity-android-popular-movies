@@ -3,12 +3,15 @@ package app.com.lamdbui.android.popularmovies;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,8 +20,30 @@ import java.util.List;
 
 public class MovieReviewListFragment extends Fragment {
 
+    private static final String ARG_MOVIE_REVIEWS_PARCEL =
+        "movie_reviews";
+
     private RecyclerView mMovieReviewRecyclerView;
     private MovieReviewListAdapter mAdapter;
+
+    private List<MovieReview> mMovieReviews;
+
+    public static MovieReviewListFragment newInstance(ArrayList<MovieReview> reviews) {
+        Bundle args = new Bundle();
+        args.putParcelableArrayList(ARG_MOVIE_REVIEWS_PARCEL, reviews);
+
+        MovieReviewListFragment fragment = new MovieReviewListFragment();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mMovieReviews = getArguments().getParcelableArrayList(ARG_MOVIE_REVIEWS_PARCEL);
+    }
 
     @Nullable
     @Override
@@ -26,9 +51,14 @@ public class MovieReviewListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_movie_review_list, container, false);
 
-        mAdapter = new MovieReviewListAdapter();
+        mAdapter = new MovieReviewListAdapter(mMovieReviews);
         mMovieReviewRecyclerView =
                 (RecyclerView) view.findViewById(R.id.movie_review_list_recycler_view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mMovieReviewRecyclerView.setLayoutManager(layoutManager);
+        DividerItemDecoration divider =
+                new DividerItemDecoration(getContext(), layoutManager.getOrientation());
+        mMovieReviewRecyclerView.addItemDecoration(divider);
         mMovieReviewRecyclerView.setAdapter(mAdapter);
 
         return view;
@@ -60,9 +90,18 @@ public class MovieReviewListFragment extends Fragment {
 
         List<MovieReview> mReviews;
 
+        public MovieReviewListAdapter(List<MovieReview> reviews) {
+            super();
+
+            mReviews = reviews;
+        }
+
         @Override
         public MovieReviewListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return null;
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            View view = inflater.inflate(R.layout.list_item_movie_review_detail, parent, false);
+
+            return new MovieReviewListViewHolder(view);
         }
 
         @Override
