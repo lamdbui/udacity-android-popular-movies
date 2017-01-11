@@ -1,10 +1,13 @@
 package app.com.lamdbui.android.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by lamdbui on 1/10/17.
  */
 
-public class MovieReview {
+public class MovieReview implements Parcelable {
 
 //    {
 //        "id": 12,
@@ -26,6 +29,46 @@ public class MovieReview {
     private String mReviewAuthor;
     private String mReviewContent;
     private String mReviewUrl;
+
+    private MovieReview(Parcel in) {
+        mID = in.readString();
+        mReviewId = in.readString();
+        mReviewAuthor = in.readString();
+        mReviewContent = in.readString();
+        mReviewUrl = in.readString();
+
+    }
+
+    public MovieReview() {
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mID);
+        dest.writeString(mReviewId);
+        dest.writeString(mReviewAuthor);
+        dest.writeString(mReviewContent);
+        dest.writeString(mReviewUrl);
+    }
+
+    public static final Parcelable.Creator<MovieReview> CREATOR
+            = new Parcelable.Creator<MovieReview>() {
+
+        @Override
+        public MovieReview createFromParcel(Parcel source) {
+            return new MovieReview(source);
+        }
+
+        @Override
+        public MovieReview[] newArray(int size) {
+            return new MovieReview[size];
+        }
+    };
 
     public String getID() {
         return mID;

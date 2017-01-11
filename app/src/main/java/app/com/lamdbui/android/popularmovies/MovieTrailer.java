@@ -1,10 +1,13 @@
 package app.com.lamdbui.android.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by lamdbui on 1/8/17.
  */
 
-public class MovieTrailer {
+public class MovieTrailer implements Parcelable {
 //    {
 //        "id": 12,
 //            "results": [
@@ -29,6 +32,51 @@ public class MovieTrailer {
     private String mSite;
     private int mSize;
     private String mType;
+
+    private MovieTrailer(Parcel in) {
+        mId = in.readString();
+        mIso_639_1 = in.readString();
+        mIso_3166_1 = in.readString();
+        mKey = in.readString();
+        mName = in.readString();
+        mSite = in.readString();
+        mSize = in.readInt();
+        mType = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
+        dest.writeString(mIso_639_1);
+        dest.writeString(mIso_3166_1);
+        dest.writeString(mKey);
+        dest.writeString(mName);
+        dest.writeString(mSite);
+        dest.writeInt(mSize);
+        dest.writeString(mType);
+    }
+
+    public MovieTrailer() {
+    }
+
+    public static final Parcelable.Creator<MovieTrailer> CREATOR
+            = new Parcelable.Creator<MovieTrailer>() {
+
+        @Override
+        public MovieTrailer createFromParcel(Parcel source) {
+            return new MovieTrailer(source);
+        }
+
+        @Override
+        public MovieTrailer[] newArray(int size) {
+            return new MovieTrailer[size];
+        }
+    };
 
     public String getId() {
         return mId;
