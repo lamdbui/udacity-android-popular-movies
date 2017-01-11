@@ -14,9 +14,15 @@ public class MovieReviewListActivity extends SingleFragmentActivity {
     public static final String EXTRA_MOVIE_REVIEWS_PARCEL =
             "app.com.lamdbui.android.popularmovies.movie_review_parcel";
 
-    public static Intent newIntent(Context packageContext, ArrayList<MovieReview> reviews) {
+    public static final String EXTRA_MOVIE_REVIEWS_POSITION =
+            "app.com.lamdbui.android.popularmovies.movie_review_position";
+
+    public static Intent newIntent(Context packageContext,
+                                   ArrayList<MovieReview> reviews,
+                                   int position) {
         Intent intent = new Intent(packageContext, MovieReviewListActivity.class);
         intent.putExtra(EXTRA_MOVIE_REVIEWS_PARCEL, reviews);
+        intent.putExtra(EXTRA_MOVIE_REVIEWS_POSITION, position);
 
         return intent;
     }
@@ -31,6 +37,8 @@ public class MovieReviewListActivity extends SingleFragmentActivity {
         ArrayList<MovieReview> reviews =
                 getIntent().getParcelableArrayListExtra(EXTRA_MOVIE_REVIEWS_PARCEL);
 
-        return MovieReviewListFragment.newInstance(reviews);
+        int position = getIntent().getIntExtra(EXTRA_MOVIE_REVIEWS_POSITION, 0);
+
+        return MovieReviewListFragment.newInstance(reviews, position);
     }
 }

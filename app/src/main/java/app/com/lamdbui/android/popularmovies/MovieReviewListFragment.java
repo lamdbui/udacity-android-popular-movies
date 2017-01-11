@@ -20,17 +20,20 @@ import java.util.List;
 
 public class MovieReviewListFragment extends Fragment {
 
-    private static final String ARG_MOVIE_REVIEWS_PARCEL =
-        "movie_reviews";
+    private static final String ARG_MOVIE_REVIEWS_PARCEL = "movie_reviews";
+    private static final String ARG_MOVIE_REVIEWS_POSITION = "position";
 
     private RecyclerView mMovieReviewRecyclerView;
     private MovieReviewListAdapter mAdapter;
 
     private List<MovieReview> mMovieReviews;
+    private int mPosition;
 
-    public static MovieReviewListFragment newInstance(ArrayList<MovieReview> reviews) {
+    public static MovieReviewListFragment newInstance(ArrayList<MovieReview> reviews,
+                                                      int position) {
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_MOVIE_REVIEWS_PARCEL, reviews);
+        args.putInt(ARG_MOVIE_REVIEWS_POSITION, position);
 
         MovieReviewListFragment fragment = new MovieReviewListFragment();
         fragment.setArguments(args);
@@ -42,7 +45,9 @@ public class MovieReviewListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mMovieReviews = getArguments().getParcelableArrayList(ARG_MOVIE_REVIEWS_PARCEL);
+        Bundle args = getArguments();
+        mMovieReviews = args.getParcelableArrayList(ARG_MOVIE_REVIEWS_PARCEL);
+        mPosition = args.getInt(ARG_MOVIE_REVIEWS_POSITION);
     }
 
     @Nullable
@@ -55,6 +60,8 @@ public class MovieReviewListFragment extends Fragment {
         mMovieReviewRecyclerView =
                 (RecyclerView) view.findViewById(R.id.movie_review_list_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        // scroll to the position we previously selected
+        layoutManager.scrollToPosition(mPosition);
         mMovieReviewRecyclerView.setLayoutManager(layoutManager);
         DividerItemDecoration divider =
                 new DividerItemDecoration(getContext(), layoutManager.getOrientation());

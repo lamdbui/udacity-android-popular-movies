@@ -286,6 +286,7 @@ public class MovieDetailFragment extends Fragment
         private TextView mTextContent;
 
         private MovieReview mReview;
+        private int mPosition;
 
         public MovieReviewHolder(View itemView) {
             super(itemView);
@@ -299,7 +300,7 @@ public class MovieDetailFragment extends Fragment
         @Override
         public void onClick(View view) {
             Intent intent = MovieReviewListActivity
-                    .newIntent(getActivity(), (ArrayList) mMovieReviews);
+                    .newIntent(getActivity(), (ArrayList) mMovieReviews, mPosition);
             startActivity(intent);
         }
 
@@ -308,6 +309,10 @@ public class MovieDetailFragment extends Fragment
 
             mTextAuthor.setText(mReview.getReviewAuthor());
             mTextContent.setText(mReview.getReviewContent());
+        }
+
+        public void setPosition(int position) {
+            mPosition = position;
         }
     }
 
@@ -336,6 +341,7 @@ public class MovieDetailFragment extends Fragment
         public void onBindViewHolder(MovieReviewHolder holder, int position) {
             MovieReview review = mReviews.get(position);
             holder.bindMovieReview(review);
+            holder.setPosition(position);
         }
 
         @Override
