@@ -8,6 +8,7 @@
         android:id="@+id/list_item_movie_trailer_play_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@null"
         android:src="@mipmap/ic_play"/>
 
     <TextView
