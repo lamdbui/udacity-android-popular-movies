@@ -6,7 +6,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 /**
@@ -14,6 +13,8 @@ import android.support.annotation.Nullable;
  */
 
 public class MovieProvider extends ContentProvider {
+
+    private static final String LOG_TAG = MovieProvider.class.getSimpleName();
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
@@ -164,6 +165,33 @@ public class MovieProvider extends ContentProvider {
         }
 
         return rowsUpdated;
+    }
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+
+        switch (match) {
+            case MOVIES:
+                db.beginTransaction();
+                int returnCount = 0;
+                try {
+                    for(ContentValues value : values) {
+                        long _id = db.insert(MovieContract.MovieTable.TABLE_NAME, null, value);
+                        if(_id != -1)
+                            returnCount++;
+                    }
+                    db.setTransactionSuccessful();
+                }
+                finally {
+                    db.endTransaction();
+                }
+
+                return returnCount;
+            default:
+                return super.bulkInsert(uri, values);
+        }
     }
 
     private static UriMatcher buildUriMatcher() {

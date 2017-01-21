@@ -3,8 +3,10 @@ package app.com.lamdbui.android.popularmovies;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -15,6 +17,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.net.ConnectivityManagerCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -48,18 +53,26 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import app.com.lamdbui.android.popularmovies.data.MovieContract.MovieTable;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class MovieListFragment extends Fragment
-    implements FetchMovieDBTask.OnCompletedFetchMovieDBTaskListener {
+    implements FetchMovieDBTask.OnCompletedFetchMovieDBTaskListener,
+        LoaderManager.LoaderCallbacks<Cursor> {
 
-    public enum SortBy { POPULAR, TOP_RATED };
+    private static final String LOG_TAG = MovieListFragment.class.getSimpleName();
+
+    public enum SortBy { POPULAR, TOP_RATED, FAVORITES };
+
+    private static final int MOVIE_LOADER = 0;
 
     private static final int REQUEST_SORT_BY = 0;
     private static final String DIALOG_SORT_BY = "DialogSortBy";
     private static final String ARG_SORT_BY = "sort_by";
+    private static final String ARG_MOVIE_LIST = "movies";
 
     private RecyclerView mMovieListRecyclerView;
     private MovieAdapter mMovieAdapter;
@@ -68,9 +81,15 @@ public class MovieListFragment extends Fragment
 
     private ProgressDialog mProgressDialog;
 
+    private boolean mFetchData;
+
+    List<Movie> mMovies;
+
     public MovieListFragment() {
         // Required empty public constructor
     }
+
+    /* Start FetchMovieDbTask implementation */
 
     @Override
     public void completedFetchMovieDBTask(List<Movie> result) {
@@ -92,19 +111,181 @@ public class MovieListFragment extends Fragment
 //                movieTrailersTask.execute(Integer.toString(result.get(i).getId()));
 //            }
 
+            mMovies = result;
+
             mMovieAdapter.setMovies(result);
             mMovieAdapter.notifyDataSetChanged();
+
+            // insert our results into the database
+
+            List<ContentValues> contentValuesList = new ArrayList<>(result.size());
+            for(Movie movie : result) {
+                ContentValues movieValues = new ContentValues();
+
+//                // extra field to identify associated list
+//                public static final String POPULAR = "popular";
+//                public static final String TOP_RATED = "top_rated";
+//                public static final String FAVORITE = "favorite";
+//
+//                // from the Movie class
+//                public static final String ID = "id";
+//                public static final String RELEASE_DATE = "release_date";
+//                //public static final String GENRE_IDS = "genre_ids";
+//                public static final String TITLE = "title";
+//                public static final String ORIGINAL_TITLE = "original_title";
+//                public static final String ORIGINAL_LANGUAGE = "original_langauge";
+//                public static final String POPULARITY = "popularity";
+//                public static final String VOTE_COUNT = "vote_count";
+//                public static final String VIDEO = "video";
+//                public static final String VOTE_AVERAGE = "vote_average";
+//                public static final String POSTER_PATH = "poster_path";
+//                public static final String BACKDROP_PATH = "backdrop_path";
+//                public static final String OVERVIEW = "overview";
+//                public static final String ADULT = "adult";
+
+                movieValues.put(MovieTable.COLS.ID, movie.getId());
+                movieValues.put(MovieTable.COLS.RELEASE_DATE, "MM-DD-YYYY");
+                movieValues.put(MovieTable.COLS.TITLE, movie.getTitle());
+                movieValues.put(MovieTable.COLS.ORIGINAL_TITLE, movie.getOriginalTitle());
+                movieValues.put(MovieTable.COLS.ORIGINAL_LANGUAGE, movie.getOriginalLanguage());
+                movieValues.put(MovieTable.COLS.POPULARITY, movie.getPopularity());
+                movieValues.put(MovieTable.COLS.VOTE_COUNT, movie.getVoteCount());
+                movieValues.put(MovieTable.COLS.VIDEO, movie.isVideo());
+                movieValues.put(MovieTable.COLS.VOTE_AVERAGE, movie.getVoteAverage());
+                movieValues.put(MovieTable.COLS.POSTER_PATH, movie.getPosterPath());
+                movieValues.put(MovieTable.COLS.BACKDROP_PATH, movie.getBackdropPath());
+                movieValues.put(MovieTable.COLS.OVERVIEW, movie.getOverview());
+                movieValues.put(MovieTable.COLS.ADULT, movie.isAdult());
+
+                switch (mSortOption) {
+                    case POPULAR:
+                        movieValues.put(MovieTable.COLS.POPULAR, 1);
+                        break;
+                    case TOP_RATED:
+                        movieValues.put(MovieTable.COLS.TOP_RATED, 1);
+                        break;
+                    default:
+                        Log.d(LOG_TAG, "Invalid sort option");
+                        break;
+                }
+
+                contentValuesList.add(movieValues);
+            }
+
+            int inserted = 0;
+            // add to the database
+            if(!contentValuesList.isEmpty()) {
+                ContentValues[] moviesArray = new ContentValues[contentValuesList.size()];
+                contentValuesList.toArray(moviesArray);
+
+                inserted = getContext().getContentResolver()
+                        .bulkInsert(MovieTable.CONTENT_URI, moviesArray);
+            }
+
+
+            Toast.makeText(getActivity(), "DB INSERTED " + inserted + "items", Toast.LENGTH_SHORT)
+                    .show();
+
+            Log.d(LOG_TAG, "DB INSERTED " + inserted + "items");
+
         }
         // result == null
         else {
-            Toast.makeText(getActivity(), R.string.error_general, Toast.LENGTH_SHORT);
+            Toast.makeText(getActivity(), R.string.error_general,
+                    Toast.LENGTH_SHORT).show();
         }
     }
+
+    /* Start LoaderManager.LoaderCallbacks<Cursor> interface implemention */
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        CursorLoader loader = new CursorLoader(
+                this.getActivity(),
+                MovieTable.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        data.moveToFirst();
+
+        List<Movie> movies = new ArrayList<>();
+
+        while(!data.isAfterLast()) {
+
+            Movie movie = new Movie();
+
+//            movieValues.put(MovieTable.COLS.ID, movie.getId());
+//            movieValues.put(MovieTable.COLS.RELEASE_DATE, "MM-DD-YYYY");
+//            movieValues.put(MovieTable.COLS.TITLE, movie.getTitle());
+//            movieValues.put(MovieTable.COLS.ORIGINAL_TITLE, movie.getOriginalTitle());
+//            movieValues.put(MovieTable.COLS.ORIGINAL_LANGUAGE, movie.getOriginalLanguage());
+//            movieValues.put(MovieTable.COLS.POPULARITY, movie.getPopularity());
+//            movieValues.put(MovieTable.COLS.VOTE_COUNT, movie.getVoteCount());
+//            movieValues.put(MovieTable.COLS.VIDEO, movie.isVideo());
+//            movieValues.put(MovieTable.COLS.VOTE_AVERAGE, movie.getVoteAverage());
+//            movieValues.put(MovieTable.COLS.POSTER_PATH, movie.getPosterPath());
+//            movieValues.put(MovieTable.COLS.BACKDROP_PATH, movie.getBackdropPath());
+//            movieValues.put(MovieTable.COLS.OVERVIEW, movie.getOverview());
+//            movieValues.put(MovieTable.COLS.ADULT, movie.isAdult());
+
+            movie.setId(data.getInt(data.getColumnIndex(MovieTable.COLS.ID)));
+            // special handling for the release date to convert into Date object
+
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//            Date releaseDate =
+//                    dateFormat.parse(currJsonMovie.getString(MOVIEDB_RELEASE_DATE));
+//
+//            movie.setReleaseDate(releaseDate);
+            movie.setTitle(data.getString(data.getColumnIndex(MovieTable.COLS.TITLE)));
+            movie.setOriginalTitle(data.getString(data.getColumnIndex(MovieTable.COLS.ORIGINAL_TITLE)));
+            movie.setOriginalLanguage(data.getString(data.getColumnIndex(MovieTable.COLS.ORIGINAL_LANGUAGE)));
+            movie.setPopularity(data.getDouble(data.getColumnIndex(MovieTable.COLS.POPULARITY)));
+            movie.setVoteCount(data.getInt(data.getColumnIndex(MovieTable.COLS.VOTE_COUNT)));
+            int video = data.getInt(data.getColumnIndex(MovieTable.COLS.VIDEO));
+            movie.setVideo((video != 0) ? true : false);
+            movie.setVoteAverage(data.getDouble(data.getColumnIndex(MovieTable.COLS.VOTE_AVERAGE)));
+            movie.setPosterPath(data.getString(data.getColumnIndex(MovieTable.COLS.POSTER_PATH)));
+            movie.setBackdropPath(data.getString(data.getColumnIndex(MovieTable.COLS.BACKDROP_PATH)));
+            movie.setOverview(data.getString(data.getColumnIndex(MovieTable.COLS.OVERVIEW)));
+            int adult = data.getInt(data.getColumnIndex(MovieTable.COLS.ADULT));
+            movie.setAdult((adult != 0) ? true : false);
+
+            movies.add(movie);
+
+            data.moveToNext();
+        }
+
+        //mMovieAdapter.setMovies(movies);
+        //mMovieAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    /* Start MovieListFragment methods */
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(ARG_SORT_BY, mSortOption);
+        outState.putParcelableArrayList(ARG_MOVIE_LIST, (ArrayList<Movie>) mMovies);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        getLoaderManager().initLoader(MOVIE_LOADER, null, this);
     }
 
     @Override
@@ -114,6 +295,7 @@ public class MovieListFragment extends Fragment
 
         if(savedInstanceState != null) {
             mSortOption = (SortBy) savedInstanceState.getSerializable(ARG_SORT_BY);
+            mMovies = savedInstanceState.getParcelableArrayList(ARG_MOVIE_LIST);
         }
         else {
             // default setting
@@ -121,6 +303,10 @@ public class MovieListFragment extends Fragment
 
             // should this be outside?
             mProgressDialog = new ProgressDialog(getActivity());
+
+            mFetchData = true;
+
+            mMovies = new ArrayList<>();
         }
     }
 
@@ -155,7 +341,9 @@ public class MovieListFragment extends Fragment
         //mMovieListRecyclerView.setItemViewCacheSize(20);
         //mMovieListRecyclerView.setDrawingCacheEnabled(true);
 
-        updateUI();
+        //mMovieListRecyclerView.setAdapter(mMovieAdapter);
+
+        updateUI(mFetchData);
 
         return view;
     }
@@ -172,25 +360,35 @@ public class MovieListFragment extends Fragment
 
             // only run the UI update if the value was actually changed
             if(prevSortOption != mSortOption) {
-                updateUI();
+                mFetchData = true;
+                updateUI(mFetchData);
             }
         }
     }
 
     // helper function to automatically update the UI
-    private void updateUI() {
+    private void updateUI(boolean fetchData) {
 
-        getMovieDBList();
+        if(fetchData) {
+            getMovieDBList();
+
+            // disable so we don't keep fetching Data
+            mFetchData = false;
+        }
 
         // hook up the adapter to the RecyclerView
         if(mMovieAdapter == null) {
 
-            List<Movie> movieList = new ArrayList<>();
+            //List<Movie> movieList = new ArrayList<>();
 
-            mMovieAdapter = new MovieAdapter(movieList);
+            //mMovieAdapter = new MovieAdapter(movieList);
+            mMovieAdapter = new MovieAdapter(mMovies);
             mMovieListRecyclerView.setAdapter(mMovieAdapter);
         }
         else {
+
+
+            mMovieAdapter.setMovies(mMovies);
             mMovieAdapter.notifyDataSetChanged();
         }
     }

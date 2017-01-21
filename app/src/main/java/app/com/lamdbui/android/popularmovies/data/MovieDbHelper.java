@@ -54,13 +54,14 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         // Create the table for the Movies
         final String SQL_CREATE_MOVIES_TABLE = "CREATE TABLE " + MovieTable.TABLE_NAME + " (" +
                 MovieTable._ID + " INTEGER PRIMARY KEY," +
-                MovieTable.COLS.ID + " REAL UNIQUE NOT NULL, " +
+                MovieTable.COLS.ID + " INTEGER UNIQUE NOT NULL, " +
                 MovieTable.COLS.RELEASE_DATE + " TEXT NOT NULL, " +
+                MovieTable.COLS.TITLE + " TEXT NOT NULL, " +
                 MovieTable.COLS.ORIGINAL_TITLE + " TEXT, " +
                 MovieTable.COLS.ORIGINAL_LANGUAGE + " TEXT, " +
                 MovieTable.COLS.POPULARITY + " TEXT, " +
-                MovieTable.COLS.VOTE_COUNT + " REAL NOT NULL, " +
-                MovieTable.COLS.VIDEO + " TEXT NOT NULL, " +
+                MovieTable.COLS.VOTE_COUNT + " INTEGER NOT NULL, " +
+                MovieTable.COLS.VIDEO + " INTEGER NOT NULL, " +
                 MovieTable.COLS.VOTE_AVERAGE + " TEXT NOT NULL, " +
                 MovieTable.COLS.POSTER_PATH + " TEXT NOT NULL, " +
                 MovieTable.COLS.BACKDROP_PATH + " TEXT, " +
