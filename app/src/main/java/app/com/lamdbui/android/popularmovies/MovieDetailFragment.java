@@ -10,12 +10,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -46,6 +51,8 @@ public class MovieDetailFragment extends Fragment
             FetchMovieReviewsTask.OnCompletedFetchMovieReviewsTaskListener {
 
     private static final String ARG_MOVIE_PARCEL = "movie";
+
+    private ShareActionProvider mShareActionProvider;
 
     private ImageView mBackdropImageView;
     private TextView mTitleTextView;
@@ -87,6 +94,10 @@ public class MovieDetailFragment extends Fragment
         if(result != null) {
             mMovieTrailers = result;
 
+            // setup to share the first trailer
+            MovieTrailer firstTrailer = mMovieTrailers.get(0);
+            setShareTrailerIntent(firstTrailer);
+
             updateUI();
         }
     }
@@ -103,6 +114,9 @@ public class MovieDetailFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+
         mMovie = (Movie) getArguments().getParcelable(ARG_MOVIE_PARCEL);
         mMovieTrailers = new ArrayList<>();
         mMovieReviews = new ArrayList<>();
@@ -166,6 +180,17 @@ public class MovieDetailFragment extends Fragment
         updateUI();
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_movie_detail, menu);
+
+        MenuItem shareItem = menu.findItem(R.id.menu_action_share);
+
+        mShareActionProvider =
+                (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
     }
 
     private void toggleFavorite() {
@@ -288,6 +313,19 @@ public class MovieDetailFragment extends Fragment
         mTrailersTextView.setText(R.string.trailers);
 
         mReviewsTextView.setText(R.string.reviews);
+    }
+
+    private void setShareTrailerIntent(MovieTrailer trailer) {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, mMovie.getTitle());
+
+        final String YOUTUBE_BASE_NAME = "https://www.youtube.com/watch?v=";
+        shareIntent.putExtra(Intent.EXTRA_TEXT, trailer.getName() + ": " +
+            YOUTUBE_BASE_NAME + trailer.getKey());
+
+        mShareActionProvider.setShareIntent(shareIntent);
     }
 
     private class MovieTrailerHolder extends RecyclerView.ViewHolder {
