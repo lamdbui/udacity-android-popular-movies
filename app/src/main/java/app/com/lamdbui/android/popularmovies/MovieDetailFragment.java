@@ -30,8 +30,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,6 +47,8 @@ import static android.view.View.VISIBLE;
 public class MovieDetailFragment extends Fragment
     implements FetchMovieTrailersTask.OnCompletedFetchMovieTrailerTaskListener,
             FetchMovieReviewsTask.OnCompletedFetchMovieReviewsTaskListener {
+
+    private static final String LOG_TAG = MovieDetailFragment.class.getSimpleName();
 
     private static final String ARG_MOVIE_PARCEL = "movie";
 
@@ -95,8 +95,10 @@ public class MovieDetailFragment extends Fragment
             mMovieTrailers = result;
 
             // setup to share the first trailer
-            MovieTrailer firstTrailer = mMovieTrailers.get(0);
-            setShareTrailerIntent(firstTrailer);
+            if(result.size() > 0) {
+                MovieTrailer firstTrailer = mMovieTrailers.get(0);
+                setShareTrailerIntent(firstTrailer);
+            }
 
             updateUI();
         }
@@ -133,6 +135,7 @@ public class MovieDetailFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
@@ -184,13 +187,15 @@ public class MovieDetailFragment extends Fragment
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_movie_detail, menu);
 
         MenuItem shareItem = menu.findItem(R.id.menu_action_share);
 
+        // not sure why the right one wasn't being included, so had to specify directly in cast
         mShareActionProvider =
-                (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+                (android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void toggleFavorite() {
@@ -325,7 +330,10 @@ public class MovieDetailFragment extends Fragment
         shareIntent.putExtra(Intent.EXTRA_TEXT, trailer.getName() + ": " +
             YOUTUBE_BASE_NAME + trailer.getKey());
 
-        mShareActionProvider.setShareIntent(shareIntent);
+        if(mShareActionProvider != null)
+            mShareActionProvider.setShareIntent(shareIntent);
+        else
+            Log.d(LOG_TAG, "ShareActionProvider is null?");
     }
 
     private class MovieTrailerHolder extends RecyclerView.ViewHolder {
