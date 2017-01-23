@@ -48,6 +48,12 @@
                 android:textSize="@dimen/font_size_medium"
                 tools:text="XXYY min"/>
 
+            <Button
+                android:id="@+id/movie_favorite_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/movie_detail_runtime"/>
+
             <TextView
                 android:id="@+id/movie_detail_vote_average"
                 android:layout_width="wrap_content"

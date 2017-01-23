@@ -60,6 +60,8 @@ public class SortByFragment extends AppCompatDialogFragment {
             case TOP_RATED:
                 sortByPosition = 1;
                 break;
+            case FAVORITES:
+                sortByPosition = 2;
             default:
                 break;
         }
@@ -76,6 +78,8 @@ public class SortByFragment extends AppCompatDialogFragment {
                             case 1:
                                 mSelectedSortOption = MovieListFragment.SortBy.TOP_RATED;
                                 break;
+                            case 2:
+                                mSelectedSortOption = MovieListFragment.SortBy.FAVORITES;
                             default:
                                 break;
                         }

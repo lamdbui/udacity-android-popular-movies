@@ -118,75 +118,56 @@ public class MovieListFragment extends Fragment
 
             // insert our results into the database
 
-            List<ContentValues> contentValuesList = new ArrayList<>(result.size());
-            for(Movie movie : result) {
-                ContentValues movieValues = new ContentValues();
-
-//                // extra field to identify associated list
-//                public static final String POPULAR = "popular";
-//                public static final String TOP_RATED = "top_rated";
-//                public static final String FAVORITE = "favorite";
+//            List<ContentValues> contentValuesList = new ArrayList<>(result.size());
+//            for(Movie movie : result) {
+//                ContentValues movieValues = new ContentValues();
 //
-//                // from the Movie class
-//                public static final String ID = "id";
-//                public static final String RELEASE_DATE = "release_date";
-//                //public static final String GENRE_IDS = "genre_ids";
-//                public static final String TITLE = "title";
-//                public static final String ORIGINAL_TITLE = "original_title";
-//                public static final String ORIGINAL_LANGUAGE = "original_langauge";
-//                public static final String POPULARITY = "popularity";
-//                public static final String VOTE_COUNT = "vote_count";
-//                public static final String VIDEO = "video";
-//                public static final String VOTE_AVERAGE = "vote_average";
-//                public static final String POSTER_PATH = "poster_path";
-//                public static final String BACKDROP_PATH = "backdrop_path";
-//                public static final String OVERVIEW = "overview";
-//                public static final String ADULT = "adult";
-
-                movieValues.put(MovieTable.COLS.ID, movie.getId());
-                movieValues.put(MovieTable.COLS.RELEASE_DATE, "MM-DD-YYYY");
-                movieValues.put(MovieTable.COLS.TITLE, movie.getTitle());
-                movieValues.put(MovieTable.COLS.ORIGINAL_TITLE, movie.getOriginalTitle());
-                movieValues.put(MovieTable.COLS.ORIGINAL_LANGUAGE, movie.getOriginalLanguage());
-                movieValues.put(MovieTable.COLS.POPULARITY, movie.getPopularity());
-                movieValues.put(MovieTable.COLS.VOTE_COUNT, movie.getVoteCount());
-                movieValues.put(MovieTable.COLS.VIDEO, movie.isVideo());
-                movieValues.put(MovieTable.COLS.VOTE_AVERAGE, movie.getVoteAverage());
-                movieValues.put(MovieTable.COLS.POSTER_PATH, movie.getPosterPath());
-                movieValues.put(MovieTable.COLS.BACKDROP_PATH, movie.getBackdropPath());
-                movieValues.put(MovieTable.COLS.OVERVIEW, movie.getOverview());
-                movieValues.put(MovieTable.COLS.ADULT, movie.isAdult());
-
-                switch (mSortOption) {
-                    case POPULAR:
-                        movieValues.put(MovieTable.COLS.POPULAR, 1);
-                        break;
-                    case TOP_RATED:
-                        movieValues.put(MovieTable.COLS.TOP_RATED, 1);
-                        break;
-                    default:
-                        Log.d(LOG_TAG, "Invalid sort option");
-                        break;
-                }
-
-                contentValuesList.add(movieValues);
-            }
-
-            int inserted = 0;
-            // add to the database
-            if(!contentValuesList.isEmpty()) {
-                ContentValues[] moviesArray = new ContentValues[contentValuesList.size()];
-                contentValuesList.toArray(moviesArray);
-
-                inserted = getContext().getContentResolver()
-                        .bulkInsert(MovieTable.CONTENT_URI, moviesArray);
-            }
-
-
-            Toast.makeText(getActivity(), "DB INSERTED " + inserted + "items", Toast.LENGTH_SHORT)
-                    .show();
-
-            Log.d(LOG_TAG, "DB INSERTED " + inserted + "items");
+//                movieValues.put(MovieTable.COLS.ID, movie.getId());
+//                movieValues.put(MovieTable.COLS.RELEASE_DATE, "MM-DD-YYYY");
+//                movieValues.put(MovieTable.COLS.TITLE, movie.getTitle());
+//                movieValues.put(MovieTable.COLS.ORIGINAL_TITLE, movie.getOriginalTitle());
+//                movieValues.put(MovieTable.COLS.ORIGINAL_LANGUAGE, movie.getOriginalLanguage());
+//                movieValues.put(MovieTable.COLS.POPULARITY, movie.getPopularity());
+//                movieValues.put(MovieTable.COLS.VOTE_COUNT, movie.getVoteCount());
+//                movieValues.put(MovieTable.COLS.VIDEO, movie.isVideo());
+//                movieValues.put(MovieTable.COLS.VOTE_AVERAGE, movie.getVoteAverage());
+//                movieValues.put(MovieTable.COLS.POSTER_PATH, movie.getPosterPath());
+//                movieValues.put(MovieTable.COLS.BACKDROP_PATH, movie.getBackdropPath());
+//                movieValues.put(MovieTable.COLS.OVERVIEW, movie.getOverview());
+//                movieValues.put(MovieTable.COLS.ADULT, movie.isAdult());
+//
+//                switch (mSortOption) {
+//                    case POPULAR:
+//                        movieValues.put(MovieTable.COLS.POPULAR, 1);
+//                        break;
+//                    case TOP_RATED:
+//                        movieValues.put(MovieTable.COLS.TOP_RATED, 1);
+//                        break;
+//                    default:
+//                        Log.d(LOG_TAG, "Invalid sort option");
+//                        break;
+//                }
+//
+//                // LAM
+//                if((movie.getId() % 2) == 0)
+//                    contentValuesList.add(movieValues);
+//            }
+//
+//            int inserted = 0;
+//            // add to the database
+//            if(!contentValuesList.isEmpty()) {
+//                ContentValues[] moviesArray = new ContentValues[contentValuesList.size()];
+//                contentValuesList.toArray(moviesArray);
+//
+//                inserted = getContext().getContentResolver()
+//                        .bulkInsert(MovieTable.CONTENT_URI, moviesArray);
+//            }
+//
+//
+//            Toast.makeText(getActivity(), "DB INSERTED " + inserted + "items", Toast.LENGTH_SHORT)
+//                    .show();
+//
+//            Log.d(LOG_TAG, "DB INSERTED " + inserted + "items");
 
         }
         // result == null
@@ -244,6 +225,9 @@ public class MovieListFragment extends Fragment
 //                    dateFormat.parse(currJsonMovie.getString(MOVIEDB_RELEASE_DATE));
 //
 //            movie.setReleaseDate(releaseDate);
+            Date movieDate =
+                    Movie.convertStringToDate(data.getString(data.getColumnIndex(MovieTable.COLS.RELEASE_DATE)));
+            movie.setReleaseDate(movieDate);
             movie.setTitle(data.getString(data.getColumnIndex(MovieTable.COLS.TITLE)));
             movie.setOriginalTitle(data.getString(data.getColumnIndex(MovieTable.COLS.ORIGINAL_TITLE)));
             movie.setOriginalLanguage(data.getString(data.getColumnIndex(MovieTable.COLS.ORIGINAL_LANGUAGE)));
@@ -257,11 +241,33 @@ public class MovieListFragment extends Fragment
             movie.setOverview(data.getString(data.getColumnIndex(MovieTable.COLS.OVERVIEW)));
             int adult = data.getInt(data.getColumnIndex(MovieTable.COLS.ADULT));
             movie.setAdult((adult != 0) ? true : false);
+            int favorite = data.getInt(data.getColumnIndex(MovieTable.COLS.FAVORITE));
+            movie.setFavorite((favorite != 0) ? true : false);
 
             movies.add(movie);
 
             data.moveToNext();
         }
+
+//        int inserted = 0;
+//        // add to the database
+//        if(!contentValuesList.isEmpty()) {
+//            ContentValues[] moviesArray = new ContentValues[contentValuesList.size()];
+//            contentValuesList.toArray(moviesArray);
+//
+//            inserted = getContext().getContentResolver()
+//                    .bulkInsert(MovieTable.CONTENT_URI, moviesArray);
+//        }
+//
+//
+//        Toast.makeText(getActivity(), "DB INSERTED " + inserted + "items", Toast.LENGTH_SHORT)
+//                .show();
+
+        mMovies = movies;
+        mMovieAdapter.setMovies(mMovies);
+        mMovieAdapter.notifyDataSetChanged();
+
+        updateUI(false);
 
         //mMovieAdapter.setMovies(movies);
         //mMovieAdapter.notifyDataSetChanged();
@@ -285,7 +291,7 @@ public class MovieListFragment extends Fragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getLoaderManager().initLoader(MOVIE_LOADER, null, this);
+        //getLoaderManager().initLoader(MOVIE_LOADER, null, this);
     }
 
     @Override
@@ -403,17 +409,25 @@ public class MovieListFragment extends Fragment
 
     private void getMovieDBList() {
         if(isOnline()) {
-            // show a nice dialog to the user indicating that something is happening
-            if(mProgressDialog != null) {
-                mProgressDialog.setMessage(getString(R.string.fetch_movie_list_message));
-                mProgressDialog.show();
-            }
 
-            FetchMovieDBTask movieDbTask = new FetchMovieDBTask(this);
-            movieDbTask.execute(
-                    (mSortOption == MovieListFragment.SortBy.POPULAR) ?
-                            FetchMovieDBTask.POPULAR_PARAM : FetchMovieDBTask.TOP_RATED_PARAM
-            );
+            if(mSortOption != SortBy.FAVORITES) {
+
+                // show a nice dialog to the user indicating that something is happening
+                if(mProgressDialog != null) {
+                    mProgressDialog.setMessage(getString(R.string.fetch_movie_list_message));
+                    mProgressDialog.show();
+                }
+
+                FetchMovieDBTask movieDbTask = new FetchMovieDBTask(this);
+                movieDbTask.execute(
+                        (mSortOption == MovieListFragment.SortBy.POPULAR) ?
+                                FetchMovieDBTask.POPULAR_PARAM : FetchMovieDBTask.TOP_RATED_PARAM
+                );
+            }
+            // SortBy.FAVORITES
+            else {
+                getLoaderManager().initLoader(MOVIE_LOADER, null, this);
+            }
         }
         // show a message if we don't have an active network connection available
         else {

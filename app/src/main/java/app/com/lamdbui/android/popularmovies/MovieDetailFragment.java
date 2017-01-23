@@ -1,6 +1,7 @@
 package app.com.lamdbui.android.popularmovies;
 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,6 +30,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import app.com.lamdbui.android.popularmovies.data.MovieContract;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -49,6 +53,7 @@ public class MovieDetailFragment extends Fragment
     private TextView mReleaseDateTextView;
     private TextView mTrailersTextView;
     private TextView mReviewsTextView;
+    private Button mFavoriteButton;
 
     private RecyclerView mTrailersRecyclerView;
     private MovieTrailerAdapter mMovieTrailerAdapter;
@@ -125,6 +130,16 @@ public class MovieDetailFragment extends Fragment
         LinearLayoutManager layoutManagerTrailers = new LinearLayoutManager(getActivity());
         mTrailersRecyclerView.setLayoutManager(layoutManagerTrailers);
 
+        mFavoriteButton = (Button) view.findViewById(R.id.movie_favorite_button);
+        mFavoriteButton.setText((mMovie.isFavorite()) ?
+                getString(R.string.remove_from_favorites) : getString(R.string.add_to_favorites));
+        mFavoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleFavorite();
+            }
+        });
+
         DividerItemDecoration dividerTrailers = new DividerItemDecoration(getContext(),
                 layoutManagerTrailers.getOrientation());
         mTrailersRecyclerView.addItemDecoration(dividerTrailers);
@@ -145,6 +160,50 @@ public class MovieDetailFragment extends Fragment
         updateUI();
 
         return view;
+    }
+
+    private void toggleFavorite() {
+        if(!mMovie.isFavorite()) {
+
+            mMovie.setFavorite(!mMovie.isFavorite());
+
+            ContentValues movieValues = new ContentValues();
+
+            movieValues.put(MovieContract.MovieTable.COLS.ID, mMovie.getId());
+            String movieReleaseDateString = Movie.convertDateToString(mMovie.getReleaseDate());
+            movieValues.put(MovieContract.MovieTable.COLS.RELEASE_DATE, movieReleaseDateString);
+            movieValues.put(MovieContract.MovieTable.COLS.TITLE, mMovie.getTitle());
+            movieValues.put(MovieContract.MovieTable.COLS.ORIGINAL_TITLE, mMovie.getOriginalTitle());
+            movieValues.put(MovieContract.MovieTable.COLS.ORIGINAL_LANGUAGE, mMovie.getOriginalLanguage());
+            movieValues.put(MovieContract.MovieTable.COLS.POPULARITY, mMovie.getPopularity());
+            movieValues.put(MovieContract.MovieTable.COLS.VOTE_COUNT, mMovie.getVoteCount());
+            movieValues.put(MovieContract.MovieTable.COLS.VIDEO, mMovie.isVideo());
+            movieValues.put(MovieContract.MovieTable.COLS.VOTE_AVERAGE, mMovie.getVoteAverage());
+            movieValues.put(MovieContract.MovieTable.COLS.POSTER_PATH, mMovie.getPosterPath());
+            movieValues.put(MovieContract.MovieTable.COLS.BACKDROP_PATH, mMovie.getBackdropPath());
+            movieValues.put(MovieContract.MovieTable.COLS.OVERVIEW, mMovie.getOverview());
+            movieValues.put(MovieContract.MovieTable.COLS.ADULT, mMovie.isAdult());
+            movieValues.put(MovieContract.MovieTable.COLS.FAVORITE, mMovie.isFavorite());
+
+            getContext().getContentResolver().insert(
+                    MovieContract.MovieTable.CONTENT_URI,
+                    movieValues
+            );
+
+            mFavoriteButton.setText(getString(R.string.remove_from_favorites));
+        }
+        else {
+
+            mMovie.setFavorite(!mMovie.isFavorite());
+
+            getContext().getContentResolver().delete(
+                    MovieContract.MovieTable.CONTENT_URI,
+                    MovieContract.MovieTable.COLS.ID + " = ?",
+                    new String[] { Integer.toString(mMovie.getId()) }
+            );
+
+            mFavoriteButton.setText(getString(R.string.add_to_favorites));
+        }
     }
 
     private void updateUI() {

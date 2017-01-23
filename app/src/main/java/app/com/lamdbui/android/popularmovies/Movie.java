@@ -1,8 +1,12 @@
 package app.com.lamdbui.android.popularmovies;
 
 import android.os.Parcel;
+import android.os.ParcelFormatException;
 import android.os.Parcelable;
+import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +16,8 @@ import java.util.List;
  */
 
 public class Movie implements Parcelable {
+
+    private static final String LOG_TAG = Movie.class.getSimpleName();
 
     private int mId;
     private Date mReleaseDate;
@@ -27,6 +33,7 @@ public class Movie implements Parcelable {
     private String mBackdropPath;
     private String mOverview;
     private boolean mAdult;
+    private boolean mIsFavorite;
 
     private Movie(Parcel in) {
         mId = in.readInt();
@@ -45,6 +52,7 @@ public class Movie implements Parcelable {
         mBackdropPath = in.readString();
         mOverview = in.readString();
         mAdult = (in.readInt() == 1) ? true : false;
+        mIsFavorite = (in.readInt() == 1) ? true : false;
     }
 
     public Movie() {
@@ -72,6 +80,7 @@ public class Movie implements Parcelable {
         dest.writeString(mBackdropPath);
         dest.writeString(mOverview);
         dest.writeInt(mAdult ? 1 : 0);
+        dest.writeInt(mIsFavorite ? 1 : 0);
     }
 
     public static final Parcelable.Creator<Movie> CREATOR
@@ -198,5 +207,35 @@ public class Movie implements Parcelable {
 
     public void setAdult(boolean adult) {
         mAdult = adult;
+    }
+
+    public boolean isFavorite() {
+        return mIsFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        mIsFavorite = favorite;
+    }
+
+    public static String convertDateToString(Date date) {
+        SimpleDateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date releaseDate = date;
+
+        return releaseDateFormat.format(releaseDate);
+    }
+
+    public static Date convertStringToDate(String dateString) {
+
+        Date releaseDate = new Date();
+
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            releaseDate =
+                    dateFormat.parse(dateString);
+        }
+        catch(ParseException e) {
+            Log.d(LOG_TAG, "Error parsing dateString into Date: " + dateString);
+        }
+        return releaseDate;
     }
 }
