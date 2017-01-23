@@ -310,8 +310,7 @@ public class MovieDetailFragment extends Fragment
         Picasso.with(getActivity()).load(imageLocation.toString()).into(mPosterImageView);
         mOverviewTextView.setText(mMovie.getOverview());
 
-        String voteAverageStr = Double.toString(mMovie.getVoteAverage()) + "/10 ("
-                + getString(R.string.movie_user_rating) + ")";
+        String voteAverageStr = Double.toString(mMovie.getVoteAverage()) + "/10";
         mVoteAverageTextView.setText(voteAverageStr);
 
         //SimpleDateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
