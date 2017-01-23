@@ -242,11 +242,9 @@ public class MovieListFragment extends Fragment
 
         mMovieListRecyclerView = (RecyclerView) view.findViewById(R.id.movie_list_recycler_view);
         mMovieListRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        //mMovieListRecyclerView.setHasFixedSize(true);
+        mMovieListRecyclerView.setHasFixedSize(true);
         //mMovieListRecyclerView.setItemViewCacheSize(20);
         //mMovieListRecyclerView.setDrawingCacheEnabled(true);
-
-        //mMovieListRecyclerView.setAdapter(mMovieAdapter);
 
         updateUI(mFetchData);
 
@@ -283,16 +281,10 @@ public class MovieListFragment extends Fragment
 
         // hook up the adapter to the RecyclerView
         if(mMovieAdapter == null) {
-
-            //List<Movie> movieList = new ArrayList<>();
-
-            //mMovieAdapter = new MovieAdapter(movieList);
             mMovieAdapter = new MovieAdapter(mMovies);
             mMovieListRecyclerView.setAdapter(mMovieAdapter);
         }
         else {
-
-
             mMovieAdapter.setMovies(mMovies);
             mMovieAdapter.notifyDataSetChanged();
         }

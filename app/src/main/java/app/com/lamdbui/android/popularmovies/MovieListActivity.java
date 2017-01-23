@@ -13,8 +13,6 @@ public class MovieListActivity extends SingleFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Stetho.initializeWithDefaults(this);
-
         Stetho.initialize(Stetho.newInitializerBuilder(this)
                 .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                 .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))

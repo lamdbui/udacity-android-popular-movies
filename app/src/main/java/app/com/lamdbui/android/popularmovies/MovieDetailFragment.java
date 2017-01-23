@@ -46,6 +46,7 @@ public class MovieDetailFragment extends Fragment
 
     private static final String ARG_MOVIE_PARCEL = "movie";
 
+    private ImageView mBackdropImageView;
     private TextView mTitleTextView;
     private ImageView mPosterImageView;
     private TextView mVoteAverageTextView;
@@ -120,6 +121,7 @@ public class MovieDetailFragment extends Fragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
+        mBackdropImageView = (ImageView) view.findViewById(R.id.movie_background_image);
         mTitleTextView = (TextView) view.findViewById(R.id.movie_detail_title);
         mPosterImageView = (ImageView) view.findViewById(R.id.movie_detail_poster);
         mVoteAverageTextView = (TextView) view.findViewById(R.id.movie_detail_vote_average);
@@ -247,11 +249,22 @@ public class MovieDetailFragment extends Fragment
             mEmptyReviewsTextView.setVisibility(GONE);
         }
 
+        final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/";
+        final String MOVIEDB_IMAGE_POSTER_SIZE = "w185";
+        final String MOVIEDB_IMAGE_BACKDROP_SIZE = "w300";
+
         mTitleTextView.setText(mMovie.getTitle());
 
-        final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/w185/";
+        Uri backdropImageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
+                //.appendEncodedPath(mMovie.getPosterPath())
+                .appendEncodedPath(MOVIEDB_IMAGE_BACKDROP_SIZE)
+                .appendEncodedPath(mMovie.getBackdropPath())
+                .build();
+        Picasso.with(getActivity()).load(backdropImageLocation.toString()).into(mBackdropImageView);
+
 
         Uri imageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
+                .appendEncodedPath(MOVIEDB_IMAGE_POSTER_SIZE)
                 .appendEncodedPath(mMovie.getPosterPath())
                 .build();
         Picasso.with(getActivity()).load(imageLocation.toString()).into(mPosterImageView);

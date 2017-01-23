@@ -10,14 +10,27 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/movie_detail_title"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/movie_detail_heading_layout_height"
-            android:textSize="@dimen/font_size_large"
-            android:background="@android:color/holo_blue_light"
-            android:gravity="center"
-            tools:text="Title"/>
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/movie_background_image"
+                android:layout_width="match_parent"
+                android:layout_height="185dp"
+                android:scaleType="centerCrop"/>
+
+            <TextView
+                android:id="@+id/movie_detail_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/font_size_large"
+                android:background="#00000000"
+                android:layout_alignParentBottom="true"
+                android:textColor="@android:color/white"
+                tools:text="Title"/>
+
+        </RelativeLayout>
 
 
         <RelativeLayout
