@@ -1,7 +1,6 @@
-package app.com.lamdbui.android.popularmovies;
+package app.com.lamdbui.android.popularmovies.model;
 
 import android.os.Parcel;
-import android.os.ParcelFormatException;
 import android.os.Parcelable;
 import android.util.Log;
 

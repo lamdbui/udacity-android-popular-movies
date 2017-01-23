@@ -1,4 +1,4 @@
-package app.com.lamdbui.android.popularmovies;
+package app.com.lamdbui.android.popularmovies.network;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -16,6 +16,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import app.com.lamdbui.android.popularmovies.BuildConfig;
+import app.com.lamdbui.android.popularmovies.model.MovieReview;
 
 /**
  * Created by lamdbui on 1/10/17.

@@ -14,6 +14,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.com.lamdbui.android.popularmovies.model.MovieReview;
+
 /**
  * Created by lamdbui on 1/10/17.
  */

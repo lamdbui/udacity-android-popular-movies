@@ -3,11 +3,11 @@ package app.com.lamdbui.android.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import app.com.lamdbui.android.popularmovies.model.MovieReview;
 
 public class MovieReviewListActivity extends SingleFragmentActivity {
 

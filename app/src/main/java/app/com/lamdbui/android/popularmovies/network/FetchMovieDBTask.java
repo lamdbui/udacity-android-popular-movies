@@ -1,4 +1,4 @@
-package app.com.lamdbui.android.popularmovies;
+package app.com.lamdbui.android.popularmovies.network;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -19,6 +19,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import app.com.lamdbui.android.popularmovies.BuildConfig;
+import app.com.lamdbui.android.popularmovies.model.Movie;
 
 /**
  * Created by lamdbui on 1/8/17.

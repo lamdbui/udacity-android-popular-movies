@@ -17,8 +17,6 @@ public class Utility {
 
     // NOTE: This function assumes 'textSize' is given in actual pixels not "sp"
     public static float getTextWidth(String text, float textSize, Typeface typeface) {
-        float textWidth;
-
         Paint paint = new Paint();
         paint.setTextSize(textSize);
         paint.setTypeface(typeface);
@@ -26,9 +24,7 @@ public class Utility {
         // calculate size of the text
         Rect textBounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), textBounds);
-        textWidth = paint.measureText(text);
-
-        Log.d("LOL", "Width/Width2: " + textBounds.width() + "/" + textWidth);
+        //textWidth = paint.measureText(text);
 
         return textBounds.width();
     }

@@ -2,9 +2,7 @@ package app.com.lamdbui.android.popularmovies;
 
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,6 +34,11 @@ import java.util.Date;
 import java.util.List;
 
 import app.com.lamdbui.android.popularmovies.data.MovieContract;
+import app.com.lamdbui.android.popularmovies.model.Movie;
+import app.com.lamdbui.android.popularmovies.model.MovieReview;
+import app.com.lamdbui.android.popularmovies.model.MovieTrailer;
+import app.com.lamdbui.android.popularmovies.network.FetchMovieReviewsTask;
+import app.com.lamdbui.android.popularmovies.network.FetchMovieTrailersTask;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -311,7 +314,8 @@ public class MovieDetailFragment extends Fragment
                 + getString(R.string.movie_user_rating) + ")";
         mVoteAverageTextView.setText(voteAverageStr);
 
-        SimpleDateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        //SimpleDateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat releaseDateFormat = new SimpleDateFormat("MMM dd, yyyy");
         Date releaseDate = mMovie.getReleaseDate();
         mReleaseDateTextView.setText(releaseDateFormat.format(releaseDate));
 
