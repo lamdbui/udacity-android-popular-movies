@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -388,10 +390,26 @@ public class MovieDetailFragment extends Fragment
 
             mTextAuthor.setText(mReview.getReviewAuthor());
             mTextContent.setText(mReview.getReviewContent());
+
+            // Set new height based on the text size to only show a single line of text initially
+            setTextViewHeightToSingleLineHeight(mTextContent);
         }
 
         public void setPosition(int position) {
             mPosition = position;
+        }
+
+        private void setTextViewHeightToSingleLineHeight(TextView textView) {
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            // round up to make sure we don't lose pixels
+            float adjustedTextSize = (textView.getTextSize() + metrics.density) / metrics.density;
+
+            Typeface typeface = textView.getTypeface();
+
+            float rowTextHeight = Utility.getTextHeight(mReview.getReviewContent(), adjustedTextSize, typeface);
+            // round up to make sure we don't lose pixels
+            double calculatedTextHeight = Math.ceil((rowTextHeight + metrics.density) * metrics.density);
+            textView.getLayoutParams().height = (int)calculatedTextHeight;
         }
     }
 

@@ -97,10 +97,6 @@ public class MovieListFragment extends Fragment
             mProgressDialog.dismiss();
         }
         if (result != null) {
-            Toast.makeText(getActivity(),
-                    "FetchMovieDBTask returned this many: " + result.size(), Toast.LENGTH_SHORT)
-                    .show();
-
             mMovies = result;
 
             mMovieAdapter.setMovies(result);

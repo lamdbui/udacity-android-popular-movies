@@ -16,5 +16,7 @@
     <dimen name="movie_detail_section_margin">16dp</dimen>
     <dimen name="movie_detail_content_padding">6dp</dimen>
 
+    <dimen name="movie_review_padding">16dp</dimen>
+
     <dimen name="button_padding">6dp</dimen>
 </resources>
