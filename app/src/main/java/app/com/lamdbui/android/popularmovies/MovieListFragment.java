@@ -97,78 +97,14 @@ public class MovieListFragment extends Fragment
             mProgressDialog.dismiss();
         }
         if (result != null) {
-            //mMovieAdapter.setMovies(result);
-            //mMovieAdapter.notifyDataSetChanged();
-
             Toast.makeText(getActivity(),
                     "FetchMovieDBTask returned this many: " + result.size(), Toast.LENGTH_SHORT)
                     .show();
-
-            // get our trailers for each Movie as well
-            // doing this really kills performance...let's try to do this on use
-//            for(int i = 0; i < result.size(); i++) {
-//                FetchMovieTrailersTask movieTrailersTask = new FetchMovieTrailersTask();
-//                movieTrailersTask.execute(Integer.toString(result.get(i).getId()));
-//            }
 
             mMovies = result;
 
             mMovieAdapter.setMovies(result);
             mMovieAdapter.notifyDataSetChanged();
-
-            // insert our results into the database
-
-//            List<ContentValues> contentValuesList = new ArrayList<>(result.size());
-//            for(Movie movie : result) {
-//                ContentValues movieValues = new ContentValues();
-//
-//                movieValues.put(MovieTable.COLS.ID, movie.getId());
-//                movieValues.put(MovieTable.COLS.RELEASE_DATE, "MM-DD-YYYY");
-//                movieValues.put(MovieTable.COLS.TITLE, movie.getTitle());
-//                movieValues.put(MovieTable.COLS.ORIGINAL_TITLE, movie.getOriginalTitle());
-//                movieValues.put(MovieTable.COLS.ORIGINAL_LANGUAGE, movie.getOriginalLanguage());
-//                movieValues.put(MovieTable.COLS.POPULARITY, movie.getPopularity());
-//                movieValues.put(MovieTable.COLS.VOTE_COUNT, movie.getVoteCount());
-//                movieValues.put(MovieTable.COLS.VIDEO, movie.isVideo());
-//                movieValues.put(MovieTable.COLS.VOTE_AVERAGE, movie.getVoteAverage());
-//                movieValues.put(MovieTable.COLS.POSTER_PATH, movie.getPosterPath());
-//                movieValues.put(MovieTable.COLS.BACKDROP_PATH, movie.getBackdropPath());
-//                movieValues.put(MovieTable.COLS.OVERVIEW, movie.getOverview());
-//                movieValues.put(MovieTable.COLS.ADULT, movie.isAdult());
-//
-//                switch (mSortOption) {
-//                    case POPULAR:
-//                        movieValues.put(MovieTable.COLS.POPULAR, 1);
-//                        break;
-//                    case TOP_RATED:
-//                        movieValues.put(MovieTable.COLS.TOP_RATED, 1);
-//                        break;
-//                    default:
-//                        Log.d(LOG_TAG, "Invalid sort option");
-//                        break;
-//                }
-//
-//                // LAM
-//                if((movie.getId() % 2) == 0)
-//                    contentValuesList.add(movieValues);
-//            }
-//
-//            int inserted = 0;
-//            // add to the database
-//            if(!contentValuesList.isEmpty()) {
-//                ContentValues[] moviesArray = new ContentValues[contentValuesList.size()];
-//                contentValuesList.toArray(moviesArray);
-//
-//                inserted = getContext().getContentResolver()
-//                        .bulkInsert(MovieTable.CONTENT_URI, moviesArray);
-//            }
-//
-//
-//            Toast.makeText(getActivity(), "DB INSERTED " + inserted + "items", Toast.LENGTH_SHORT)
-//                    .show();
-//
-//            Log.d(LOG_TAG, "DB INSERTED " + inserted + "items");
-
         }
         // result == null
         else {
@@ -203,28 +139,8 @@ public class MovieListFragment extends Fragment
 
             Movie movie = new Movie();
 
-//            movieValues.put(MovieTable.COLS.ID, movie.getId());
-//            movieValues.put(MovieTable.COLS.RELEASE_DATE, "MM-DD-YYYY");
-//            movieValues.put(MovieTable.COLS.TITLE, movie.getTitle());
-//            movieValues.put(MovieTable.COLS.ORIGINAL_TITLE, movie.getOriginalTitle());
-//            movieValues.put(MovieTable.COLS.ORIGINAL_LANGUAGE, movie.getOriginalLanguage());
-//            movieValues.put(MovieTable.COLS.POPULARITY, movie.getPopularity());
-//            movieValues.put(MovieTable.COLS.VOTE_COUNT, movie.getVoteCount());
-//            movieValues.put(MovieTable.COLS.VIDEO, movie.isVideo());
-//            movieValues.put(MovieTable.COLS.VOTE_AVERAGE, movie.getVoteAverage());
-//            movieValues.put(MovieTable.COLS.POSTER_PATH, movie.getPosterPath());
-//            movieValues.put(MovieTable.COLS.BACKDROP_PATH, movie.getBackdropPath());
-//            movieValues.put(MovieTable.COLS.OVERVIEW, movie.getOverview());
-//            movieValues.put(MovieTable.COLS.ADULT, movie.isAdult());
-
             movie.setId(data.getInt(data.getColumnIndex(MovieTable.COLS.ID)));
             // special handling for the release date to convert into Date object
-
-//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//            Date releaseDate =
-//                    dateFormat.parse(currJsonMovie.getString(MOVIEDB_RELEASE_DATE));
-//
-//            movie.setReleaseDate(releaseDate);
             Date movieDate =
                     Movie.convertStringToDate(data.getString(data.getColumnIndex(MovieTable.COLS.RELEASE_DATE)));
             movie.setReleaseDate(movieDate);
@@ -249,28 +165,11 @@ public class MovieListFragment extends Fragment
             data.moveToNext();
         }
 
-//        int inserted = 0;
-//        // add to the database
-//        if(!contentValuesList.isEmpty()) {
-//            ContentValues[] moviesArray = new ContentValues[contentValuesList.size()];
-//            contentValuesList.toArray(moviesArray);
-//
-//            inserted = getContext().getContentResolver()
-//                    .bulkInsert(MovieTable.CONTENT_URI, moviesArray);
-//        }
-//
-//
-//        Toast.makeText(getActivity(), "DB INSERTED " + inserted + "items", Toast.LENGTH_SHORT)
-//                .show();
-
         mMovies = movies;
         mMovieAdapter.setMovies(mMovies);
         mMovieAdapter.notifyDataSetChanged();
 
         updateUI(false);
-
-        //mMovieAdapter.setMovies(movies);
-        //mMovieAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -451,6 +350,18 @@ public class MovieListFragment extends Fragment
 
         @Override
         public void onClick(View v) {
+            // check to see if it was a favorite
+            Cursor queryCursor = getContext().getContentResolver().query(MovieTable.CONTENT_URI, null,
+                    MovieTable.COLS.ID + " = ?",
+                    new String[] { Integer.toString(mMovie.getId()) },
+                    null
+            );
+
+            if(queryCursor.getCount() > 0)
+                mMovie.setFavorite(true);
+            else
+                mMovie.setFavorite(false);
+
             Intent movieIntent = MovieDetailActivity.newIntent(getActivity(), mMovie);
             startActivity(movieIntent);
         }
