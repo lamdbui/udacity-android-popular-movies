@@ -4,6 +4,7 @@ package app.com.lamdbui.android.popularmovies;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -133,6 +134,9 @@ public class MovieDetailFragment extends Fragment
         mTrailersRecyclerView.setLayoutManager(layoutManagerTrailers);
 
         mFavoriteButton = (Button) view.findViewById(R.id.movie_favorite_button);
+        mFavoriteButton.setBackgroundColor((mMovie.isFavorite()) ?
+                getResources().getColor(R.color.colorRemoveFavorite) :
+                getResources().getColor(R.color.colorAddFavorite));
         mFavoriteButton.setText((mMovie.isFavorite()) ?
                 getString(R.string.remove_from_favorites) : getString(R.string.add_to_favorites));
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
@@ -206,6 +210,10 @@ public class MovieDetailFragment extends Fragment
 
             mFavoriteButton.setText(getString(R.string.add_to_favorites));
         }
+
+        mFavoriteButton.setBackgroundColor((mMovie.isFavorite()) ?
+                getResources().getColor(R.color.colorRemoveFavorite) :
+                getResources().getColor(R.color.colorAddFavorite));
     }
 
     private void updateUI() {
@@ -256,7 +264,6 @@ public class MovieDetailFragment extends Fragment
         mTitleTextView.setText(mMovie.getTitle());
 
         Uri backdropImageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
-                //.appendEncodedPath(mMovie.getPosterPath())
                 .appendEncodedPath(MOVIEDB_IMAGE_BACKDROP_SIZE)
                 .appendEncodedPath(mMovie.getBackdropPath())
                 .build();

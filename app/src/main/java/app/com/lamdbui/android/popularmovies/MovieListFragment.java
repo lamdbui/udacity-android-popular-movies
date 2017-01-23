@@ -377,7 +377,6 @@ public class MovieListFragment extends Fragment
             //Log.d("DISPLAY_METRICS", "W/H: " + metrics.widthPixels + "/" + metrics.heightPixels);
 
             Picasso picasso = Picasso.with(getActivity());
-            picasso.setIndicatorsEnabled(true);
 
             picasso.load(imageLocation.toString())
                     .into(mImageView);

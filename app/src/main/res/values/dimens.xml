@@ -7,8 +7,14 @@
     <dimen name="font_size_medium">22sp</dimen>
     <dimen name="font_size_large">34sp</dimen>
 
+    <dimen name="movie_title_overlay_padding">6dp</dimen>
+
     <dimen name="movie_detail_heading_layout_height">100dp</dimen>
     <dimen name="movie_detail_poster_image_margin_top">10dp</dimen>
-    <dimen name="movie_detail_poster_image_margin_left">15dp</dimen>
-    <dimen name="movie_detail_poster_image_margin_right">50dp</dimen>
+    <dimen name="movie_detail_poster_image_margin_left">16dp</dimen>
+    <dimen name="movie_detail_poster_image_margin_right">16dp</dimen>
+    <dimen name="movie_detail_section_margin">16dp</dimen>
+    <dimen name="movie_detail_content_padding">6dp</dimen>
+
+    <dimen name="button_padding">6dp</dimen>
 </resources>
