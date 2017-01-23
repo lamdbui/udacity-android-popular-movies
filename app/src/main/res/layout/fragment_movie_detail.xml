@@ -129,7 +129,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/movie_detail_section_margin"
-            android:layout_marginRight="@dimen/movie_detail_section_margin">
+            android:layout_marginRight="@dimen/movie_detail_section_margin"
+            android:layout_marginBottom="@dimen/movie_detail_section_margin">
 
             <TextView
                 android:id="@+id/empty_movie_review_text"

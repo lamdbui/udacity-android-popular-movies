@@ -11,6 +11,14 @@
         android:textSize="@dimen/font_size_small"/>
 
     <TextView
+        android:id="@+id/list_item_see_more_overflow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:visibility="gone"
+        android:text="@string/movie_review_see_more"/>
+
+    <TextView
         android:id="@+id/list_item_movie_review_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

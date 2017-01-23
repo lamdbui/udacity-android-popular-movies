@@ -21,9 +21,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -365,6 +363,7 @@ public class MovieDetailFragment extends Fragment
 
         private TextView mTextAuthor;
         private TextView mTextContent;
+        private TextView mSeeMore;
 
         private MovieReview mReview;
         private int mPosition;
@@ -376,6 +375,7 @@ public class MovieDetailFragment extends Fragment
 
             mTextAuthor = (TextView) itemView.findViewById(R.id.list_item_movie_review_author);
             mTextContent = (TextView) itemView.findViewById(R.id.list_item_movie_review_content);
+            mSeeMore = (TextView) itemView.findViewById(R.id.list_item_see_more_overflow);
         }
 
         @Override
@@ -399,6 +399,8 @@ public class MovieDetailFragment extends Fragment
             mPosition = position;
         }
 
+        // Calculates width and height for a line of text and decides whether or not to display
+        // additional text to "read more"
         private void setTextViewHeightToSingleLineHeight(TextView textView) {
             DisplayMetrics metrics = getResources().getDisplayMetrics();
             // round up to make sure we don't lose pixels
@@ -406,10 +408,23 @@ public class MovieDetailFragment extends Fragment
 
             Typeface typeface = textView.getTypeface();
 
-            float rowTextHeight = Utility.getTextHeight(mReview.getReviewContent(), adjustedTextSize, typeface);
+            float rowTextHeight = Utility.getTextHeight(
+                    mReview.getReviewContent(),
+                    adjustedTextSize,
+                    typeface
+            );
             // round up to make sure we don't lose pixels
             double calculatedTextHeight = Math.ceil((rowTextHeight + metrics.density) * metrics.density);
             textView.getLayoutParams().height = (int)calculatedTextHeight;
+
+            float rowTextWidth = Utility.getTextWidth(mReview.getReviewContent(), adjustedTextSize, typeface);
+            // convert back to actual size
+            double calculatedTextWidth = Math.ceil((rowTextWidth + metrics.density) * metrics.density);
+
+            if(calculatedTextWidth > metrics.widthPixels)
+                mSeeMore.setVisibility(VISIBLE);
+            else
+                mSeeMore.setVisibility(GONE);
         }
     }
 
