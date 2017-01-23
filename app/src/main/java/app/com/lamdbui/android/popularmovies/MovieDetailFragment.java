@@ -250,8 +250,8 @@ public class MovieDetailFragment extends Fragment
         }
 
         final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/";
-        final String MOVIEDB_IMAGE_POSTER_SIZE = "w185";
-        final String MOVIEDB_IMAGE_BACKDROP_SIZE = "w300";
+        final String MOVIEDB_IMAGE_POSTER_SIZE = "w342";
+        final String MOVIEDB_IMAGE_BACKDROP_SIZE = "w780";
 
         mTitleTextView.setText(mMovie.getTitle());
 

@@ -363,7 +363,7 @@ public class MovieListFragment extends Fragment
 
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
 
-            final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/w185/";
+            final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/w342/";
 
             Uri imageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
                     .appendEncodedPath(mMovie.getPosterPath())
