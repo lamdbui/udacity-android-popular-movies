@@ -102,6 +102,9 @@ public class MovieDetailFragment extends Fragment
                 MovieTrailer firstTrailer = mMovieTrailers.get(0);
                 setShareTrailerIntent(firstTrailer);
             }
+            else {
+                setShareTrailerIntent(null);
+            }
 
             updateUI();
         }
@@ -197,6 +200,16 @@ public class MovieDetailFragment extends Fragment
         // not sure why the right one wasn't being included, so had to specify directly in cast
         mShareActionProvider =
                 (android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+
+        // setup to share the first trailer
+        // this is in case the task finishes before the UI loads
+        if(mMovieTrailers.size() > 0) {
+            MovieTrailer firstTrailer = mMovieTrailers.get(0);
+            setShareTrailerIntent(firstTrailer);
+        }
+        else {
+            setShareTrailerIntent(null);
+        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -329,9 +342,11 @@ public class MovieDetailFragment extends Fragment
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, mMovie.getTitle());
 
-        final String YOUTUBE_BASE_NAME = "https://www.youtube.com/watch?v=";
-        shareIntent.putExtra(Intent.EXTRA_TEXT, trailer.getName() + ": " +
-            YOUTUBE_BASE_NAME + trailer.getKey());
+        if(trailer != null) {
+            final String YOUTUBE_BASE_NAME = "https://www.youtube.com/watch?v=";
+            shareIntent.putExtra(Intent.EXTRA_TEXT, trailer.getName() + ": " +
+                    YOUTUBE_BASE_NAME + trailer.getKey());
+        }
 
         if(mShareActionProvider != null)
             mShareActionProvider.setShareIntent(shareIntent);
