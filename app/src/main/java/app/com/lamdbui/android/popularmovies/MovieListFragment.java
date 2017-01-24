@@ -199,23 +199,23 @@ public class MovieListFragment extends Fragment
             mMovies = new ArrayList<>();
         }
 
-        // Retrofit test
-        MovieDbApi movieApi = MovieDbClient.getClient().create(MovieDbApi.class);
-
-        Call<MovieDbResponse> call = movieApi.getPopularMovies(BuildConfig.MOVIE_DB_API_KEY);
-        call.enqueue(new Callback<MovieDbResponse>() {
-            @Override
-            public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
-                Log.d("RETROFIT", response.body().toString());
-                List<Movie> movies = response.body().getResults();
-                Log.d("RETROFIT", "Num of Movies: " + movies.size());
-            }
-
-            @Override
-            public void onFailure(Call<MovieDbResponse> call, Throwable t) {
-                Log.d("RETROFIT", "Sad Pandas");
-            }
-        });
+//        // Retrofit test
+//        MovieDbApi movieApi = MovieDbClient.getClient().create(MovieDbApi.class);
+//
+//        Call<MovieDbResponse> call = movieApi.getPopularMovies(BuildConfig.MOVIE_DB_API_KEY);
+//        call.enqueue(new Callback<MovieDbResponse>() {
+//            @Override
+//            public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
+//                Log.d("RETROFIT", response.body().toString());
+//                List<Movie> movies = response.body().getResults();
+//                Log.d("RETROFIT", "Num of Movies: " + movies.size());
+//            }
+//
+//            @Override
+//            public void onFailure(Call<MovieDbResponse> call, Throwable t) {
+//                Log.d("RETROFIT", "Sad Pandas");
+//            }
+//        });
     }
 
     @Override
@@ -312,11 +312,44 @@ public class MovieListFragment extends Fragment
                     mProgressDialog.show();
                 }
 
-                FetchMovieDBTask movieDbTask = new FetchMovieDBTask(this);
-                movieDbTask.execute(
-                        (mSortOption == MovieListFragment.SortBy.POPULAR) ?
-                                FetchMovieDBTask.POPULAR_PARAM : FetchMovieDBTask.TOP_RATED_PARAM
-                );
+//                FetchMovieDBTask movieDbTask = new FetchMovieDBTask(this);
+//                movieDbTask.execute(
+//                        (mSortOption == MovieListFragment.SortBy.POPULAR) ?
+//                                FetchMovieDBTask.POPULAR_PARAM : FetchMovieDBTask.TOP_RATED_PARAM
+//                );
+
+                // Retrofit test
+                MovieDbApi movieApi = MovieDbClient.getClient().create(MovieDbApi.class);
+
+                Call<MovieDbResponse> call = movieApi.getPopularMovies(BuildConfig.MOVIE_DB_API_KEY);
+                call.enqueue(new Callback<MovieDbResponse>() {
+                    @Override
+                    public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
+                        Log.d("RETROFIT", response.body().toString());
+                        List<Movie> movies = response.body().getResults();
+                        Log.d("RETROFIT", "Num of Movies: " + movies.size());
+
+                        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                            mProgressDialog.dismiss();
+                        }
+                        if (movies != null) {
+                            mMovies = movies;
+
+                            mMovieAdapter.setMovies(mMovies);
+                            mMovieAdapter.notifyDataSetChanged();
+                        }
+                        // result == null
+                        else {
+                            Toast.makeText(getActivity(), R.string.error_general,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MovieDbResponse> call, Throwable t) {
+                        Log.d("RETROFIT", "Sad Pandas");
+                    }
+                });
             }
             // SortBy.FAVORITES
             else {

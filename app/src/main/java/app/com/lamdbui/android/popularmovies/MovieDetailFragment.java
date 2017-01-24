@@ -133,13 +133,13 @@ public class MovieDetailFragment extends Fragment
         mMovieTrailers = new ArrayList<>();
         mMovieReviews = new ArrayList<>();
 
-        // Fetch our trailers
-        FetchMovieTrailersTask fetchMovieTrailersTask = new FetchMovieTrailersTask(this);
-        fetchMovieTrailersTask.execute(Integer.toString(mMovie.getId()));
-
-        // Fetch our reviews
-        FetchMovieReviewsTask fetchMovieReviewsTask = new FetchMovieReviewsTask(this);
-        fetchMovieReviewsTask.execute(Integer.toString(mMovie.getId()));
+//        // Fetch our trailers
+//        FetchMovieTrailersTask fetchMovieTrailersTask = new FetchMovieTrailersTask(this);
+//        fetchMovieTrailersTask.execute(Integer.toString(mMovie.getId()));
+//
+//        // Fetch our reviews
+//        FetchMovieReviewsTask fetchMovieReviewsTask = new FetchMovieReviewsTask(this);
+//        fetchMovieReviewsTask.execute(Integer.toString(mMovie.getId()));
 
         // Retrofit test
         //https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=81a7252786506fb151f11b6bbca03baa&language=en-US
@@ -151,6 +151,19 @@ public class MovieDetailFragment extends Fragment
             public void onResponse(Call<MovieTrailerResponse> call, Response<MovieTrailerResponse> response) {
                 List<MovieTrailer> movieTrailers = response.body().getResults();
                 Log.d(LOG_TAG, "Num of Retrofit Trailers: " + movieTrailers.size());
+
+                mMovieTrailers = movieTrailers;
+
+                // setup to share the first trailer
+                if(mMovieTrailers.size() > 0) {
+                    MovieTrailer firstTrailer = mMovieTrailers.get(0);
+                    setShareTrailerIntent(firstTrailer);
+                }
+                else {
+                    setShareTrailerIntent(null);
+                }
+
+                updateUI();
             }
 
             @Override
@@ -167,6 +180,10 @@ public class MovieDetailFragment extends Fragment
             public void onResponse(Call<MovieReviewResponse> call, Response<MovieReviewResponse> response) {
                 List<MovieReview> movieReviews = response.body().getResults();
                 Log.d(LOG_TAG, "Num of Retrofit Reviews: " + movieReviews.size());
+
+                mMovieReviews = movieReviews;
+
+                updateUI();
             }
 
             @Override
