@@ -3,6 +3,8 @@ package app.com.lamdbui.android.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by lamdbui on 1/8/17.
  */
@@ -24,13 +26,21 @@ public class MovieTrailer implements Parcelable {
 //        ]
 //    }
 
+    @SerializedName("id")
     private String mId;
+    @SerializedName("iso_639_1")
     private String mIso_639_1;
+    @SerializedName("iso_3166_1")
     private String mIso_3166_1;
+    @SerializedName("key")
     private String mKey;
+    @SerializedName("name")
     private String mName;
+    @SerializedName("site")
     private String mSite;
+    @SerializedName("size")
     private int mSize;
+    @SerializedName("trailer")
     private String mType;
 
     private MovieTrailer(Parcel in) {

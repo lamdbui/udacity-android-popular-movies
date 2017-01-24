@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,20 +20,35 @@ public class Movie implements Parcelable {
 
     private static final String LOG_TAG = Movie.class.getSimpleName();
 
+    @SerializedName("id")
     private int mId;
+    @SerializedName("release_date")
     private Date mReleaseDate;
+    @SerializedName("genre_ids")
     private List<Integer> mGenreIds;
+    @SerializedName("title")
     private String mTitle;
+    @SerializedName("orginal_title")
     private String mOriginalTitle;
+    @SerializedName("original_language")
     private String mOriginalLanguage;
+    @SerializedName("popularity")
     private double mPopularity;
+    @SerializedName("vote_count")
     private int mVoteCount;
+    @SerializedName("video")
     private boolean mVideo;
+    @SerializedName("vote_average")
     private double mVoteAverage;
+    @SerializedName("poster_path")
     private String mPosterPath;
+    @SerializedName("backdrop_path")
     private String mBackdropPath;
+    @SerializedName("overview")
     private String mOverview;
+    @SerializedName("adult")
     private boolean mAdult;
+
     private boolean mIsFavorite;
 
     private Movie(Parcel in) {

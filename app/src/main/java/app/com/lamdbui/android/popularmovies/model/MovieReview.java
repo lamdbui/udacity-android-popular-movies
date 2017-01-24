@@ -3,6 +3,8 @@ package app.com.lamdbui.android.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by lamdbui on 1/10/17.
  */
@@ -25,9 +27,13 @@ public class MovieReview implements Parcelable {
 //    }
 
     private String mID;
+    @SerializedName("id")
     private String mReviewId;
+    @SerializedName("author")
     private String mReviewAuthor;
+    @SerializedName("content")
     private String mReviewContent;
+    @SerializedName("url")
     private String mReviewUrl;
 
     private MovieReview(Parcel in) {
@@ -36,7 +42,6 @@ public class MovieReview implements Parcelable {
         mReviewAuthor = in.readString();
         mReviewContent = in.readString();
         mReviewUrl = in.readString();
-
     }
 
     public MovieReview() {

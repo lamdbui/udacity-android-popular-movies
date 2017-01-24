@@ -20,6 +20,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,6 +39,10 @@ import java.util.List;
 import app.com.lamdbui.android.popularmovies.data.MovieContract.MovieTable;
 import app.com.lamdbui.android.popularmovies.model.Movie;
 import app.com.lamdbui.android.popularmovies.network.FetchMovieDBTask;
+import app.com.lamdbui.android.popularmovies.network.MovieDbClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -193,6 +198,24 @@ public class MovieListFragment extends Fragment
 
             mMovies = new ArrayList<>();
         }
+
+        // Retrofit test
+        MovieDbApi movieApi = MovieDbClient.getClient().create(MovieDbApi.class);
+
+        Call<MovieDbResponse> call = movieApi.getPopularMovies(BuildConfig.MOVIE_DB_API_KEY);
+        call.enqueue(new Callback<MovieDbResponse>() {
+            @Override
+            public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
+                Log.d("RETROFIT", response.body().toString());
+                List<Movie> movies = response.body().getResults();
+                Log.d("RETROFIT", "Num of Movies: " + movies.size());
+            }
+
+            @Override
+            public void onFailure(Call<MovieDbResponse> call, Throwable t) {
+                Log.d("RETROFIT", "Sad Pandas");
+            }
+        });
     }
 
     @Override

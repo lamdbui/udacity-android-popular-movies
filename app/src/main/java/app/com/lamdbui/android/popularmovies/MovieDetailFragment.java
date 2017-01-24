@@ -39,6 +39,10 @@ import app.com.lamdbui.android.popularmovies.model.MovieReview;
 import app.com.lamdbui.android.popularmovies.model.MovieTrailer;
 import app.com.lamdbui.android.popularmovies.network.FetchMovieReviewsTask;
 import app.com.lamdbui.android.popularmovies.network.FetchMovieTrailersTask;
+import app.com.lamdbui.android.popularmovies.network.MovieDbClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -136,6 +140,40 @@ public class MovieDetailFragment extends Fragment
         // Fetch our reviews
         FetchMovieReviewsTask fetchMovieReviewsTask = new FetchMovieReviewsTask(this);
         fetchMovieReviewsTask.execute(Integer.toString(mMovie.getId()));
+
+        // Retrofit test
+        //https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=81a7252786506fb151f11b6bbca03baa&language=en-US
+        MovieDbApi movieDbApi = MovieDbClient.getClient().create(MovieDbApi.class);
+        // Trailers
+        Call<MovieTrailerResponse> callVideos = movieDbApi.getMovieVideos(mMovie.getId(), BuildConfig.MOVIE_DB_API_KEY);
+        callVideos.enqueue(new Callback<MovieTrailerResponse>() {
+            @Override
+            public void onResponse(Call<MovieTrailerResponse> call, Response<MovieTrailerResponse> response) {
+                List<MovieTrailer> movieTrailers = response.body().getResults();
+                Log.d(LOG_TAG, "Num of Retrofit Trailers: " + movieTrailers.size());
+            }
+
+            @Override
+            public void onFailure(Call<MovieTrailerResponse> call, Throwable t) {
+                Log.d(LOG_TAG, "Error fetching videos");
+            }
+        });
+
+        // Reviews
+        //https://api.themoviedb.org/3/movie/{movie_id}/reviews?api_key=81a7252786506fb151f11b6bbca03baa&language=en-US&page=1
+        Call<MovieReviewResponse> callReviews = movieDbApi.getMovieReviews(mMovie.getId(), BuildConfig.MOVIE_DB_API_KEY);
+        callReviews.enqueue(new Callback<MovieReviewResponse>() {
+            @Override
+            public void onResponse(Call<MovieReviewResponse> call, Response<MovieReviewResponse> response) {
+                List<MovieReview> movieReviews = response.body().getResults();
+                Log.d(LOG_TAG, "Num of Retrofit Reviews: " + movieReviews.size());
+            }
+
+            @Override
+            public void onFailure(Call<MovieReviewResponse> call, Throwable t) {
+                Log.d(LOG_TAG, "Error fetching reviews");
+            }
+        });
     }
 
     @Override
