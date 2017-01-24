@@ -38,7 +38,6 @@ import java.util.List;
 
 import app.com.lamdbui.android.popularmovies.data.MovieContract.MovieTable;
 import app.com.lamdbui.android.popularmovies.model.Movie;
-import app.com.lamdbui.android.popularmovies.network.FetchMovieDBTask;
 import app.com.lamdbui.android.popularmovies.network.MovieDbClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,8 +48,7 @@ import retrofit2.Response;
  * A simple {@link Fragment} subclass.
  */
 public class MovieListFragment extends Fragment
-    implements FetchMovieDBTask.OnCompletedFetchMovieDBTaskListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+    implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = MovieListFragment.class.getSimpleName();
 
@@ -76,26 +74,6 @@ public class MovieListFragment extends Fragment
 
     public MovieListFragment() {
         // Required empty public constructor
-    }
-
-    /* Start FetchMovieDbTask implementation */
-
-    @Override
-    public void completedFetchMovieDBTask(List<Movie> result) {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-        if (result != null) {
-            mMovies = result;
-
-            mMovieAdapter.setMovies(result);
-            mMovieAdapter.notifyDataSetChanged();
-        }
-        // result == null
-        else {
-            Toast.makeText(getActivity(), R.string.error_general,
-                    Toast.LENGTH_SHORT).show();
-        }
     }
 
     /* Start LoaderManager.LoaderCallbacks<Cursor> interface implemention */
@@ -198,24 +176,6 @@ public class MovieListFragment extends Fragment
 
             mMovies = new ArrayList<>();
         }
-
-//        // Retrofit test
-//        MovieDbApi movieApi = MovieDbClient.getClient().create(MovieDbApi.class);
-//
-//        Call<MovieDbResponse> call = movieApi.getPopularMovies(BuildConfig.MOVIE_DB_API_KEY);
-//        call.enqueue(new Callback<MovieDbResponse>() {
-//            @Override
-//            public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
-//                Log.d("RETROFIT", response.body().toString());
-//                List<Movie> movies = response.body().getResults();
-//                Log.d("RETROFIT", "Num of Movies: " + movies.size());
-//            }
-//
-//            @Override
-//            public void onFailure(Call<MovieDbResponse> call, Throwable t) {
-//                Log.d("RETROFIT", "Sad Pandas");
-//            }
-//        });
     }
 
     @Override
@@ -312,22 +272,14 @@ public class MovieListFragment extends Fragment
                     mProgressDialog.show();
                 }
 
-//                FetchMovieDBTask movieDbTask = new FetchMovieDBTask(this);
-//                movieDbTask.execute(
-//                        (mSortOption == MovieListFragment.SortBy.POPULAR) ?
-//                                FetchMovieDBTask.POPULAR_PARAM : FetchMovieDBTask.TOP_RATED_PARAM
-//                );
-
-                // Retrofit test
+                // Fetch our Movies
                 MovieDbApi movieApi = MovieDbClient.getClient().create(MovieDbApi.class);
 
                 Call<MovieDbResponse> call = movieApi.getPopularMovies(BuildConfig.MOVIE_DB_API_KEY);
                 call.enqueue(new Callback<MovieDbResponse>() {
                     @Override
                     public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
-                        Log.d("RETROFIT", response.body().toString());
                         List<Movie> movies = response.body().getResults();
-                        Log.d("RETROFIT", "Num of Movies: " + movies.size());
 
                         if (mProgressDialog != null && mProgressDialog.isShowing()) {
                             mProgressDialog.dismiss();

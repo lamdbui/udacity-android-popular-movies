@@ -37,8 +37,6 @@ import app.com.lamdbui.android.popularmovies.data.MovieContract;
 import app.com.lamdbui.android.popularmovies.model.Movie;
 import app.com.lamdbui.android.popularmovies.model.MovieReview;
 import app.com.lamdbui.android.popularmovies.model.MovieTrailer;
-import app.com.lamdbui.android.popularmovies.network.FetchMovieReviewsTask;
-import app.com.lamdbui.android.popularmovies.network.FetchMovieTrailersTask;
 import app.com.lamdbui.android.popularmovies.network.MovieDbClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,9 +49,7 @@ import static android.view.View.VISIBLE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MovieDetailFragment extends Fragment
-    implements FetchMovieTrailersTask.OnCompletedFetchMovieTrailerTaskListener,
-            FetchMovieReviewsTask.OnCompletedFetchMovieReviewsTaskListener {
+public class MovieDetailFragment extends Fragment {
 
     private static final String LOG_TAG = MovieDetailFragment.class.getSimpleName();
 
@@ -97,33 +93,6 @@ public class MovieDetailFragment extends Fragment
     }
 
     @Override
-    public void completedFetchMovieTrailerTask(List<MovieTrailer> result) {
-        if(result != null) {
-            mMovieTrailers = result;
-
-            // setup to share the first trailer
-            if(result.size() > 0) {
-                MovieTrailer firstTrailer = mMovieTrailers.get(0);
-                setShareTrailerIntent(firstTrailer);
-            }
-            else {
-                setShareTrailerIntent(null);
-            }
-
-            updateUI();
-        }
-    }
-
-    @Override
-    public void completedFetchMovieReviewsTask(List<MovieReview> result) {
-        if(result != null) {
-            mMovieReviews = result;
-
-            updateUI();
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -133,24 +102,14 @@ public class MovieDetailFragment extends Fragment
         mMovieTrailers = new ArrayList<>();
         mMovieReviews = new ArrayList<>();
 
-//        // Fetch our trailers
-//        FetchMovieTrailersTask fetchMovieTrailersTask = new FetchMovieTrailersTask(this);
-//        fetchMovieTrailersTask.execute(Integer.toString(mMovie.getId()));
-//
-//        // Fetch our reviews
-//        FetchMovieReviewsTask fetchMovieReviewsTask = new FetchMovieReviewsTask(this);
-//        fetchMovieReviewsTask.execute(Integer.toString(mMovie.getId()));
-
-        // Retrofit test
-        //https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=81a7252786506fb151f11b6bbca03baa&language=en-US
         MovieDbApi movieDbApi = MovieDbClient.getClient().create(MovieDbApi.class);
-        // Trailers
+
+        // Fetch our trailers
         Call<MovieTrailerResponse> callVideos = movieDbApi.getMovieVideos(mMovie.getId(), BuildConfig.MOVIE_DB_API_KEY);
         callVideos.enqueue(new Callback<MovieTrailerResponse>() {
             @Override
             public void onResponse(Call<MovieTrailerResponse> call, Response<MovieTrailerResponse> response) {
                 List<MovieTrailer> movieTrailers = response.body().getResults();
-                Log.d(LOG_TAG, "Num of Retrofit Trailers: " + movieTrailers.size());
 
                 mMovieTrailers = movieTrailers;
 
@@ -172,14 +131,12 @@ public class MovieDetailFragment extends Fragment
             }
         });
 
-        // Reviews
-        //https://api.themoviedb.org/3/movie/{movie_id}/reviews?api_key=81a7252786506fb151f11b6bbca03baa&language=en-US&page=1
+        // Fetch our reviews
         Call<MovieReviewResponse> callReviews = movieDbApi.getMovieReviews(mMovie.getId(), BuildConfig.MOVIE_DB_API_KEY);
         callReviews.enqueue(new Callback<MovieReviewResponse>() {
             @Override
             public void onResponse(Call<MovieReviewResponse> call, Response<MovieReviewResponse> response) {
                 List<MovieReview> movieReviews = response.body().getResults();
-                Log.d(LOG_TAG, "Num of Retrofit Reviews: " + movieReviews.size());
 
                 mMovieReviews = movieReviews;
 
@@ -507,7 +464,7 @@ public class MovieDetailFragment extends Fragment
         public void bindMovieReview(MovieReview movieReview) {
             mReview = movieReview;
 
-            mTextAuthor.setText(mReview.getReviewAuthor());
+            mTextAuthor.setText("-" + mReview.getReviewAuthor());
             mTextContent.setText(mReview.getReviewContent());
 
             // Set new height based on the text size to only show a single line of text initially
