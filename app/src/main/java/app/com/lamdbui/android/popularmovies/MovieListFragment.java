@@ -36,7 +36,9 @@ import java.util.List;
 
 import app.com.lamdbui.android.popularmovies.data.MovieContract.MovieTable;
 import app.com.lamdbui.android.popularmovies.model.Movie;
+import app.com.lamdbui.android.popularmovies.network.MovieDbApi;
 import app.com.lamdbui.android.popularmovies.network.MovieDbClient;
+import app.com.lamdbui.android.popularmovies.network.MovieDbResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -363,7 +365,7 @@ public class MovieListFragment extends Fragment
             mImageView.setAdjustViewBounds(true);
 
             Picasso picasso = Picasso.with(getActivity());
-            picasso.setIndicatorsEnabled(true);
+            //picasso.setIndicatorsEnabled(true);
 
             picasso.load(imageLocation.toString())
                     .into(mImageView);

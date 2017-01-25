@@ -1,4 +1,4 @@
-package app.com.lamdbui.android.popularmovies;
+package app.com.lamdbui.android.popularmovies.network;
 
 import com.google.gson.annotations.SerializedName;
 

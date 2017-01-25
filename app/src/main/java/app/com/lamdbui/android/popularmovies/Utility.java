@@ -3,9 +3,6 @@ package app.com.lamdbui.android.popularmovies;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.text.TextPaint;
-import android.util.DisplayMetrics;
-import android.util.Log;
 
 /**
  * Created by lamdbui on 1/22/17.

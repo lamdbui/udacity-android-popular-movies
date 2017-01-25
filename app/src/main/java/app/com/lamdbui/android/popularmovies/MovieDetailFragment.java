@@ -37,7 +37,10 @@ import app.com.lamdbui.android.popularmovies.data.MovieContract;
 import app.com.lamdbui.android.popularmovies.model.Movie;
 import app.com.lamdbui.android.popularmovies.model.MovieReview;
 import app.com.lamdbui.android.popularmovies.model.MovieTrailer;
+import app.com.lamdbui.android.popularmovies.network.MovieDbApi;
 import app.com.lamdbui.android.popularmovies.network.MovieDbClient;
+import app.com.lamdbui.android.popularmovies.network.MovieReviewResponse;
+import app.com.lamdbui.android.popularmovies.network.MovieTrailerResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -317,26 +320,6 @@ public class MovieDetailFragment extends Fragment {
 
     private void updateUI() {
 
-//        // hook up our adapter to the RecyclerView
-//        if(mMovieTrailerAdapter == null) {
-//
-//            List<MovieTrailer> movieTrailerList = new ArrayList<>();
-//            mMovieTrailerAdapter = new MovieTrailerAdapter(movieTrailerList);
-//            mTrailersRecyclerView.setAdapter(mMovieTrailerAdapter);
-//
-//            List<MovieReview> movieReviewList = new ArrayList<>();
-//            mMovieReviewAdapter = new MovieReviewAdapter(movieReviewList);
-//            mReviewsRecyclerView.setAdapter(mMovieReviewAdapter);
-//
-//        }
-//        else {
-//            mMovieTrailerAdapter.setMovieTrailers(mMovieTrailers);
-//            mMovieTrailerAdapter.notifyDataSetChanged();
-//
-//            mMovieReviewAdapter.setMovieReviews(mMovieReviews);
-//            mMovieReviewAdapter.notifyDataSetChanged();
-//        }
-
         // add some handling so we can show an empty item when there are no list items
         if(mMovieTrailers.isEmpty()) {
             mTrailersRecyclerView.setVisibility(GONE);
@@ -356,24 +339,8 @@ public class MovieDetailFragment extends Fragment {
             mEmptyReviewsTextView.setVisibility(GONE);
         }
 
-//        final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/";
-//        final String MOVIEDB_IMAGE_POSTER_SIZE = "w342";
-//        final String MOVIEDB_IMAGE_BACKDROP_SIZE = "w780";
-
         mTitleTextView.setText(mMovie.getTitle());
 
-//        Uri backdropImageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
-//                .appendEncodedPath(MOVIEDB_IMAGE_BACKDROP_SIZE)
-//                .appendEncodedPath(mMovie.getBackdropPath())
-//                .build();
-//        Picasso.with(getActivity()).load(backdropImageLocation.toString()).into(mBackdropImageView);
-//
-//
-//        Uri imageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
-//                .appendEncodedPath(MOVIEDB_IMAGE_POSTER_SIZE)
-//                .appendEncodedPath(mMovie.getPosterPath())
-//                .build();
-//        Picasso.with(getActivity()).load(imageLocation.toString()).into(mPosterImageView);
         mOverviewTextView.setText(mMovie.getOverview());
 
         String voteAverageStr = Double.toString(mMovie.getVoteAverage()) + "/10";
