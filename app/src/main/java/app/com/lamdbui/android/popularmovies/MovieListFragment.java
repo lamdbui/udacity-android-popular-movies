@@ -205,7 +205,7 @@ public class MovieListFragment extends Fragment
 
         mMovieListRecyclerView = (RecyclerView) view.findViewById(R.id.movie_list_recycler_view);
         mMovieListRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        mMovieListRecyclerView.setHasFixedSize(true);
+        //mMovieListRecyclerView.setHasFixedSize(true);
         //mMovieListRecyclerView.setItemViewCacheSize(20);
         //mMovieListRecyclerView.setDrawingCacheEnabled(true);
 
@@ -275,7 +275,11 @@ public class MovieListFragment extends Fragment
                 // Fetch our Movies
                 MovieDbApi movieApi = MovieDbClient.getClient().create(MovieDbApi.class);
 
-                Call<MovieDbResponse> call = movieApi.getPopularMovies(BuildConfig.MOVIE_DB_API_KEY);
+                Call<MovieDbResponse> call;
+                if(mSortOption == SortBy.POPULAR)
+                    call = movieApi.getPopularMovies(BuildConfig.MOVIE_DB_API_KEY);
+                else // SortBy.TOP_RATED
+                    call = movieApi.getTopRatedMovies(BuildConfig.MOVIE_DB_API_KEY);
                 call.enqueue(new Callback<MovieDbResponse>() {
                     @Override
                     public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
@@ -299,7 +303,7 @@ public class MovieListFragment extends Fragment
 
                     @Override
                     public void onFailure(Call<MovieDbResponse> call, Throwable t) {
-                        Log.d("RETROFIT", "Sad Pandas");
+                        Log.d(LOG_TAG, "Error fetching Movies");
                     }
                 });
             }
