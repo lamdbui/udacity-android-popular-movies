@@ -122,7 +122,19 @@ public class MovieDetailFragment extends Fragment {
                     setShareTrailerIntent(null);
                 }
 
-                updateUI();
+                if(mMovieTrailerAdapter == null) {
+
+                    List<MovieTrailer> movieTrailerList = new ArrayList<>();
+                    mMovieTrailerAdapter = new MovieTrailerAdapter(movieTrailerList);
+                    mTrailersRecyclerView.setAdapter(mMovieTrailerAdapter);
+
+                }
+                else {
+                    mMovieTrailerAdapter.setMovieTrailers(mMovieTrailers);
+                    mMovieTrailerAdapter.notifyDataSetChanged();
+                }
+
+                //updateUI();
             }
 
             @Override
@@ -140,7 +152,19 @@ public class MovieDetailFragment extends Fragment {
 
                 mMovieReviews = movieReviews;
 
-                updateUI();
+                if(mMovieReviewAdapter == null) {
+
+                    List<MovieReview> movieReviewList = new ArrayList<>();
+                    mMovieReviewAdapter = new MovieReviewAdapter(movieReviewList);
+                    mReviewsRecyclerView.setAdapter(mMovieReviewAdapter);
+
+                }
+                else {
+                    mMovieReviewAdapter.setMovieReviews(mMovieReviews);
+                    mMovieReviewAdapter.notifyDataSetChanged();
+                }
+
+                //updateUI();
             }
 
             @Override
@@ -197,6 +221,23 @@ public class MovieDetailFragment extends Fragment {
 
         mEmptyTrailersTextView = (TextView) view.findViewById(R.id.empty_movie_trailer_text);
         mEmptyReviewsTextView = (TextView) view.findViewById(R.id.empty_movie_review_text);
+
+        final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/";
+        final String MOVIEDB_IMAGE_POSTER_SIZE = "w342";
+        final String MOVIEDB_IMAGE_BACKDROP_SIZE = "w780";
+
+        Uri backdropImageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
+                .appendEncodedPath(MOVIEDB_IMAGE_BACKDROP_SIZE)
+                .appendEncodedPath(mMovie.getBackdropPath())
+                .build();
+        Picasso.with(getActivity()).load(backdropImageLocation.toString()).into(mBackdropImageView);
+
+
+        Uri imageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
+                .appendEncodedPath(MOVIEDB_IMAGE_POSTER_SIZE)
+                .appendEncodedPath(mMovie.getPosterPath())
+                .build();
+        Picasso.with(getActivity()).load(imageLocation.toString()).into(mPosterImageView);
 
         updateUI();
 
@@ -276,25 +317,25 @@ public class MovieDetailFragment extends Fragment {
 
     private void updateUI() {
 
-        // hook up our adapter to the RecyclerView
-        if(mMovieTrailerAdapter == null) {
-
-            List<MovieTrailer> movieTrailerList = new ArrayList<>();
-            mMovieTrailerAdapter = new MovieTrailerAdapter(movieTrailerList);
-            mTrailersRecyclerView.setAdapter(mMovieTrailerAdapter);
-
-            List<MovieReview> movieReviewList = new ArrayList<>();
-            mMovieReviewAdapter = new MovieReviewAdapter(movieReviewList);
-            mReviewsRecyclerView.setAdapter(mMovieReviewAdapter);
-
-        }
-        else {
-            mMovieTrailerAdapter.setMovieTrailers(mMovieTrailers);
-            mMovieTrailerAdapter.notifyDataSetChanged();
-
-            mMovieReviewAdapter.setMovieReviews(mMovieReviews);
-            mMovieReviewAdapter.notifyDataSetChanged();
-        }
+//        // hook up our adapter to the RecyclerView
+//        if(mMovieTrailerAdapter == null) {
+//
+//            List<MovieTrailer> movieTrailerList = new ArrayList<>();
+//            mMovieTrailerAdapter = new MovieTrailerAdapter(movieTrailerList);
+//            mTrailersRecyclerView.setAdapter(mMovieTrailerAdapter);
+//
+//            List<MovieReview> movieReviewList = new ArrayList<>();
+//            mMovieReviewAdapter = new MovieReviewAdapter(movieReviewList);
+//            mReviewsRecyclerView.setAdapter(mMovieReviewAdapter);
+//
+//        }
+//        else {
+//            mMovieTrailerAdapter.setMovieTrailers(mMovieTrailers);
+//            mMovieTrailerAdapter.notifyDataSetChanged();
+//
+//            mMovieReviewAdapter.setMovieReviews(mMovieReviews);
+//            mMovieReviewAdapter.notifyDataSetChanged();
+//        }
 
         // add some handling so we can show an empty item when there are no list items
         if(mMovieTrailers.isEmpty()) {
@@ -315,24 +356,24 @@ public class MovieDetailFragment extends Fragment {
             mEmptyReviewsTextView.setVisibility(GONE);
         }
 
-        final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/";
-        final String MOVIEDB_IMAGE_POSTER_SIZE = "w342";
-        final String MOVIEDB_IMAGE_BACKDROP_SIZE = "w780";
+//        final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/";
+//        final String MOVIEDB_IMAGE_POSTER_SIZE = "w342";
+//        final String MOVIEDB_IMAGE_BACKDROP_SIZE = "w780";
 
         mTitleTextView.setText(mMovie.getTitle());
 
-        Uri backdropImageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
-                .appendEncodedPath(MOVIEDB_IMAGE_BACKDROP_SIZE)
-                .appendEncodedPath(mMovie.getBackdropPath())
-                .build();
-        Picasso.with(getActivity()).load(backdropImageLocation.toString()).into(mBackdropImageView);
-
-
-        Uri imageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
-                .appendEncodedPath(MOVIEDB_IMAGE_POSTER_SIZE)
-                .appendEncodedPath(mMovie.getPosterPath())
-                .build();
-        Picasso.with(getActivity()).load(imageLocation.toString()).into(mPosterImageView);
+//        Uri backdropImageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
+//                .appendEncodedPath(MOVIEDB_IMAGE_BACKDROP_SIZE)
+//                .appendEncodedPath(mMovie.getBackdropPath())
+//                .build();
+//        Picasso.with(getActivity()).load(backdropImageLocation.toString()).into(mBackdropImageView);
+//
+//
+//        Uri imageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
+//                .appendEncodedPath(MOVIEDB_IMAGE_POSTER_SIZE)
+//                .appendEncodedPath(mMovie.getPosterPath())
+//                .build();
+//        Picasso.with(getActivity()).load(imageLocation.toString()).into(mPosterImageView);
         mOverviewTextView.setText(mMovie.getOverview());
 
         String voteAverageStr = Double.toString(mMovie.getVoteAverage()) + "/10";

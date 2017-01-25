@@ -6,8 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -205,9 +203,10 @@ public class MovieListFragment extends Fragment
 
         mMovieListRecyclerView = (RecyclerView) view.findViewById(R.id.movie_list_recycler_view);
         mMovieListRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        //mMovieListRecyclerView.setHasFixedSize(true);
-        //mMovieListRecyclerView.setItemViewCacheSize(20);
-        //mMovieListRecyclerView.setDrawingCacheEnabled(true);
+        mMovieListRecyclerView.setHasFixedSize(true);
+        mMovieListRecyclerView.setItemViewCacheSize(20);
+        mMovieListRecyclerView.setDrawingCacheEnabled(true);
+        mMovieListRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
         updateUI(mFetchData);
 
@@ -235,6 +234,7 @@ public class MovieListFragment extends Fragment
     // helper function to automatically update the UI
     private void updateUI(boolean fetchData) {
 
+        //fetchData = true;
         if(fetchData) {
             getMovieDBList();
 
@@ -353,8 +353,6 @@ public class MovieListFragment extends Fragment
         public void bindMovie(Movie movie) {
             mMovie = movie;
 
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-
             final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/w342/";
 
             Uri imageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
@@ -364,11 +362,8 @@ public class MovieListFragment extends Fragment
             // so that the image fills the entire space
             mImageView.setAdjustViewBounds(true);
 
-            //DisplayMetrics metrics = getResources().getDisplayMetrics();
-
-            //Log.d("DISPLAY_METRICS", "W/H: " + metrics.widthPixels + "/" + metrics.heightPixels);
-
             Picasso picasso = Picasso.with(getActivity());
+            picasso.setIndicatorsEnabled(true);
 
             picasso.load(imageLocation.toString())
                     .into(mImageView);
