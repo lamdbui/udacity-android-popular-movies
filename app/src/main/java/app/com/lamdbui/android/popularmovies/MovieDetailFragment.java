@@ -104,77 +104,6 @@ public class MovieDetailFragment extends Fragment {
         mMovie = (Movie) getArguments().getParcelable(ARG_MOVIE_PARCEL);
         mMovieTrailers = new ArrayList<>();
         mMovieReviews = new ArrayList<>();
-
-        MovieDbApi movieDbApi = MovieDbClient.getClient().create(MovieDbApi.class);
-
-        // Fetch our trailers
-        Call<MovieTrailerResponse> callVideos = movieDbApi.getMovieVideos(mMovie.getId(), BuildConfig.MOVIE_DB_API_KEY);
-        callVideos.enqueue(new Callback<MovieTrailerResponse>() {
-            @Override
-            public void onResponse(Call<MovieTrailerResponse> call, Response<MovieTrailerResponse> response) {
-                List<MovieTrailer> movieTrailers = response.body().getResults();
-
-                mMovieTrailers = movieTrailers;
-
-                // setup to share the first trailer
-                if(mMovieTrailers.size() > 0) {
-                    MovieTrailer firstTrailer = mMovieTrailers.get(0);
-                    setShareTrailerIntent(firstTrailer);
-                }
-                else {
-                    setShareTrailerIntent(null);
-                }
-
-                if(mMovieTrailerAdapter == null) {
-
-                    List<MovieTrailer> movieTrailerList = new ArrayList<>();
-                    mMovieTrailerAdapter = new MovieTrailerAdapter(movieTrailerList);
-                    mTrailersRecyclerView.setAdapter(mMovieTrailerAdapter);
-
-                }
-                else {
-                    mMovieTrailerAdapter.setMovieTrailers(mMovieTrailers);
-                    mMovieTrailerAdapter.notifyDataSetChanged();
-                }
-
-                //updateUI();
-            }
-
-            @Override
-            public void onFailure(Call<MovieTrailerResponse> call, Throwable t) {
-                Log.d(LOG_TAG, "Error fetching videos");
-            }
-        });
-
-        // Fetch our reviews
-        Call<MovieReviewResponse> callReviews = movieDbApi.getMovieReviews(mMovie.getId(), BuildConfig.MOVIE_DB_API_KEY);
-        callReviews.enqueue(new Callback<MovieReviewResponse>() {
-            @Override
-            public void onResponse(Call<MovieReviewResponse> call, Response<MovieReviewResponse> response) {
-                List<MovieReview> movieReviews = response.body().getResults();
-
-                mMovieReviews = movieReviews;
-
-                if(mMovieReviewAdapter == null) {
-
-                    List<MovieReview> movieReviewList = new ArrayList<>();
-                    mMovieReviewAdapter = new MovieReviewAdapter(movieReviewList);
-                    mReviewsRecyclerView.setAdapter(mMovieReviewAdapter);
-
-                }
-                else {
-                    mMovieReviewAdapter.setMovieReviews(mMovieReviews);
-                    mMovieReviewAdapter.notifyDataSetChanged();
-                }
-
-                //updateUI();
-            }
-
-            @Override
-            public void onFailure(Call<MovieReviewResponse> call, Throwable t) {
-                Log.d(LOG_TAG, "Error fetching reviews");
-            }
-        });
     }
 
     @Override
@@ -225,24 +154,32 @@ public class MovieDetailFragment extends Fragment {
         mEmptyTrailersTextView = (TextView) view.findViewById(R.id.empty_movie_trailer_text);
         mEmptyReviewsTextView = (TextView) view.findViewById(R.id.empty_movie_review_text);
 
-        final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/";
-        final String MOVIEDB_IMAGE_POSTER_SIZE = "w342";
-        final String MOVIEDB_IMAGE_BACKDROP_SIZE = "w780";
+        mMovieTrailerAdapter = new MovieTrailerAdapter(mMovieTrailers);
+        mTrailersRecyclerView.setAdapter(mMovieTrailerAdapter);
 
-        Uri backdropImageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
-                .appendEncodedPath(MOVIEDB_IMAGE_BACKDROP_SIZE)
-                .appendEncodedPath(mMovie.getBackdropPath())
-                .build();
-        Picasso.with(getActivity()).load(backdropImageLocation.toString()).into(mBackdropImageView);
+        mMovieReviewAdapter = new MovieReviewAdapter(mMovieReviews);
+        mReviewsRecyclerView.setAdapter(mMovieReviewAdapter);
 
+        mTitleTextView.setText(mMovie.getTitle());
 
-        Uri imageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
-                .appendEncodedPath(MOVIEDB_IMAGE_POSTER_SIZE)
-                .appendEncodedPath(mMovie.getPosterPath())
-                .build();
-        Picasso.with(getActivity()).load(imageLocation.toString()).into(mPosterImageView);
+        mOverviewTextView.setText(mMovie.getOverview());
 
-        updateUI();
+        String voteAverageStr = Double.toString(mMovie.getVoteAverage()) + "/10";
+        mVoteAverageTextView.setText(voteAverageStr);
+
+        //SimpleDateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat releaseDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+        Date releaseDate = mMovie.getReleaseDate();
+        mReleaseDateTextView.setText(releaseDateFormat.format(releaseDate));
+
+        mTrailersTextView.setText(R.string.trailers);
+
+        mReviewsTextView.setText(R.string.reviews);
+
+        fetchReviewsAndUpdateUI();
+        fetchTrailersAndUpdateUI();
+
+        fetchBackdropAndPosterAndUpdateUI();
 
         return view;
     }
@@ -268,6 +205,100 @@ public class MovieDetailFragment extends Fragment {
         }
 
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void fetchBackdropAndPosterAndUpdateUI() {
+        final String MOVIEDB_IMAGE_BASE_PATH = "http://image.tmdb.org/t/p/";
+        final String MOVIEDB_IMAGE_POSTER_SIZE = "w342";
+        final String MOVIEDB_IMAGE_BACKDROP_SIZE = "w780";
+
+        Uri backdropImageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
+                .appendEncodedPath(MOVIEDB_IMAGE_BACKDROP_SIZE)
+                .appendEncodedPath(mMovie.getBackdropPath())
+                .build();
+        Picasso.with(getActivity()).load(backdropImageLocation.toString()).into(mBackdropImageView);
+
+
+        Uri imageLocation = Uri.parse(MOVIEDB_IMAGE_BASE_PATH).buildUpon()
+                .appendEncodedPath(MOVIEDB_IMAGE_POSTER_SIZE)
+                .appendEncodedPath(mMovie.getPosterPath())
+                .build();
+        Picasso.with(getActivity()).load(imageLocation.toString()).into(mPosterImageView);
+    }
+
+    private void fetchTrailersAndUpdateUI() {
+        MovieDbApi movieDbApi = MovieDbClient.getClient().create(MovieDbApi.class);
+
+        // Fetch our trailers
+        Call<MovieTrailerResponse> callVideos = movieDbApi.getMovieVideos(mMovie.getId(), BuildConfig.MOVIE_DB_API_KEY);
+        callVideos.enqueue(new Callback<MovieTrailerResponse>() {
+            @Override
+            public void onResponse(Call<MovieTrailerResponse> call, Response<MovieTrailerResponse> response) {
+                List<MovieTrailer> movieTrailers = response.body().getResults();
+
+                mMovieTrailers = movieTrailers;
+
+                // setup to share the first trailer
+                if(mMovieTrailers.size() > 0) {
+                    MovieTrailer firstTrailer = mMovieTrailers.get(0);
+                    setShareTrailerIntent(firstTrailer);
+                }
+                else {
+                    setShareTrailerIntent(null);
+                }
+
+                mMovieTrailerAdapter.setMovieTrailers(mMovieTrailers);
+                mMovieTrailerAdapter.notifyDataSetChanged();
+
+                // make the appropriate UI elements appear, if we have trailers
+                if(mMovieTrailers.isEmpty()) {
+                    mTrailersRecyclerView.setVisibility(GONE);
+                    mEmptyTrailersTextView.setVisibility(VISIBLE);
+                }
+                else {
+                    mTrailersRecyclerView.setVisibility(VISIBLE);
+                    mEmptyTrailersTextView.setVisibility(GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieTrailerResponse> call, Throwable t) {
+                Log.d(LOG_TAG, "Error fetching videos");
+            }
+        });
+    }
+
+    private void fetchReviewsAndUpdateUI() {
+        MovieDbApi movieDbApi = MovieDbClient.getClient().create(MovieDbApi.class);
+
+        // Fetch our reviews
+        Call<MovieReviewResponse> callReviews = movieDbApi.getMovieReviews(mMovie.getId(), BuildConfig.MOVIE_DB_API_KEY);
+        callReviews.enqueue(new Callback<MovieReviewResponse>() {
+            @Override
+            public void onResponse(Call<MovieReviewResponse> call, Response<MovieReviewResponse> response) {
+                List<MovieReview> movieReviews = response.body().getResults();
+
+                mMovieReviews = movieReviews;
+
+                mMovieReviewAdapter.setMovieReviews(mMovieReviews);
+                mMovieReviewAdapter.notifyDataSetChanged();
+
+                // make the appropriate UI elements appear, if we have reviews
+                if(mMovieReviews.isEmpty()) {
+                    mReviewsRecyclerView.setVisibility(GONE);
+                    mEmptyReviewsTextView.setVisibility(VISIBLE);
+                }
+                else {
+                    mReviewsRecyclerView.setVisibility(VISIBLE);
+                    mEmptyReviewsTextView.setVisibility(GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieReviewResponse> call, Throwable t) {
+                Log.d(LOG_TAG, "Error fetching reviews");
+            }
+        });
     }
 
     private void toggleFavorite() {
@@ -320,40 +351,21 @@ public class MovieDetailFragment extends Fragment {
 
     private void updateUI() {
 
-        // add some handling so we can show an empty item when there are no list items
-        if(mMovieTrailers.isEmpty()) {
-            mTrailersRecyclerView.setVisibility(GONE);
-            mEmptyTrailersTextView.setVisibility(VISIBLE);
-        }
-        else {
-            mTrailersRecyclerView.setVisibility(VISIBLE);
-            mEmptyTrailersTextView.setVisibility(GONE);
-        }
-
-        if(mMovieReviews.isEmpty()) {
-            mReviewsRecyclerView.setVisibility(GONE);
-            mEmptyReviewsTextView.setVisibility(VISIBLE);
-        }
-        else {
-            mReviewsRecyclerView.setVisibility(VISIBLE);
-            mEmptyReviewsTextView.setVisibility(GONE);
-        }
-
-        mTitleTextView.setText(mMovie.getTitle());
-
-        mOverviewTextView.setText(mMovie.getOverview());
-
-        String voteAverageStr = Double.toString(mMovie.getVoteAverage()) + "/10";
-        mVoteAverageTextView.setText(voteAverageStr);
-
-        //SimpleDateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat releaseDateFormat = new SimpleDateFormat("MMM dd, yyyy");
-        Date releaseDate = mMovie.getReleaseDate();
-        mReleaseDateTextView.setText(releaseDateFormat.format(releaseDate));
-
-        mTrailersTextView.setText(R.string.trailers);
-
-        mReviewsTextView.setText(R.string.reviews);
+//        mTitleTextView.setText(mMovie.getTitle());
+//
+//        mOverviewTextView.setText(mMovie.getOverview());
+//
+//        String voteAverageStr = Double.toString(mMovie.getVoteAverage()) + "/10";
+//        mVoteAverageTextView.setText(voteAverageStr);
+//
+//        //SimpleDateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//        SimpleDateFormat releaseDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+//        Date releaseDate = mMovie.getReleaseDate();
+//        mReleaseDateTextView.setText(releaseDateFormat.format(releaseDate));
+//
+//        mTrailersTextView.setText(R.string.trailers);
+//
+//        mReviewsTextView.setText(R.string.reviews);
     }
 
     private void setShareTrailerIntent(MovieTrailer trailer) {
