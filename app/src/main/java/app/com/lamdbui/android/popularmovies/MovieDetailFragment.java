@@ -349,25 +349,6 @@ public class MovieDetailFragment extends Fragment {
                 getResources().getColor(R.color.colorAddFavorite));
     }
 
-    private void updateUI() {
-
-//        mTitleTextView.setText(mMovie.getTitle());
-//
-//        mOverviewTextView.setText(mMovie.getOverview());
-//
-//        String voteAverageStr = Double.toString(mMovie.getVoteAverage()) + "/10";
-//        mVoteAverageTextView.setText(voteAverageStr);
-//
-//        //SimpleDateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//        SimpleDateFormat releaseDateFormat = new SimpleDateFormat("MMM dd, yyyy");
-//        Date releaseDate = mMovie.getReleaseDate();
-//        mReleaseDateTextView.setText(releaseDateFormat.format(releaseDate));
-//
-//        mTrailersTextView.setText(R.string.trailers);
-//
-//        mReviewsTextView.setText(R.string.reviews);
-    }
-
     private void setShareTrailerIntent(MovieTrailer trailer) {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
